@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+  <link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <script src="/shared/sptps://online.saskpolytech.ca/shared/sp-template/scripts/snippets/accordion.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $("h1:first").addClass("sr-only");
+    });
+  </script>
+
+
+ <title>Lesson 5 — Input and Output</title>
+</head><body><h1>Lesson 5 — Input and Output</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO3 — Use language libraries and functions when developing a procedural program.</p>
+<p><strong>Assessment alignment:</strong> Midterm 1 (Input Functions).</p>
+</div>
+</div>
+<h2>Input Functions</h2>
+<p>There are several input functions in C that you should be aware of, along with some of their limitations and security risks. These include:</p>
+<ul>
+<li><strong>scanf</strong> — https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/scanf-scanf-l-wscanf-wscanf-l?view=msvc-170 or https://en.cppreference.com/w/c/io/fscanf</li>
+<li><strong>scanf_s</strong> — https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/scanf-s-scanf-s-l-wscanf-s-wscanf-s-l?view=msvc-170 or https://en.cppreference.com/w/c/io/fscanf</li>
+<li><strong>gets</strong> — https://learn.microsoft.com/en-us/cpp/c-runtime-library/gets-getws?view=msvc-170 or https://en.cppreference.com/w/c/io/gets</li>
+<li><strong>gets_s</strong> — https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/gets-s-getws-s?view=msvc-170 or https://en.cppreference.com/w/c/io/gets</li>
+<li><strong>fgets</strong> — https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/fgets-fgetws?view=msvc-170 or https://en.cppreference.com/w/c/io/fgets</li>
+<li><strong>getc</strong> — https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/getc-getwc?view=msvc-170 or https://en.cppreference.com/w/c/io/fgetc</li>
+<li><strong>getchar</strong> — https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/getchar-getwchar?view=msvc-170 or https://en.cppreference.com/w/c/io/getchar</li>
+</ul>
+<h2>Project Setup</h2>
+<p>Create a C project with a file named <code>inputfuncs.c</code>. Include the usual headers plus <code>&lt;string.h&gt;</code> for string functions.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt; // contains string functions in C</code></pre>
+<p>Add <code>main</code> to call <code>test1</code> (you can switch which test runs as you progress).</p>
+<pre class="line-numbers d2l-code"><code class="language-c">void test1(void);
+
+int main(void)
+{
+    test1();
+    return EXIT_SUCCESS;
+}</code></pre>
+<hr>
+<h2>Test 1 — Using <code>scanf</code> to read a single string</h2>
+<p><code>scanf</code> reads input based on format specifiers, similar to how <code>printf</code> prints output. The <code>%s</code> specifier reads a string token (up to whitespace).</p>
+<pre class="line-numbers d2l-code"><code class="language-c">// Test 1 - use scanf to input a string
+void test1(void)
+{
+    char cArray[10];
+    int iReturnValue;
+
+    printf("Enter a string: "); // no \n so input appears on same line
+    iReturnValue = scanf("%s", cArray);
+
+    printf("String entered: %s\n", cArray);
+    printf("Return value: %d\n", iReturnValue);
+}</code></pre>
+<h3>What to notice</h3>
+<ul>
+<li><strong>Stops at whitespace:</strong> input like <code>My string</code> reads only <code>My</code>.</li>
+<li><strong>Return value:</strong> returns number of items read successfully (here, <code>1</code>).</li>
+<li><strong>Overflow risk:</strong> <code>%s</code> will keep reading until whitespace even if it exceeds the buffer size.</li>
+</ul>
+<h3>Visual Studio warning: “unsafe” C runtime functions</h3>
+<p>Visual Studio may warn that <code>scanf</code> is unsafe and suggest <code>scanf_s</code>. To allow <code>scanf</code> in VS, add:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">#define _CRT_SECURE_NO_WARNINGS</code></pre>
+<p>Or set it globally: Project → Properties → C/C++ → Preprocessor → add <code>;_CRT_SECURE_NO_WARNINGS</code>.</p>
+<h3>Safer <code>scanf</code> for strings: add a field width</h3>
+<p>For a buffer of size 10, use <code>%9s</code> so the null terminator still fits:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">iReturnValue = scanf("%9s", cArray);</code></pre>
+<hr>
+<h2>Using <code>scanf_s</code> (Microsoft compilers)</h2>
+<p>On Microsoft compilers, <code>scanf_s</code> requires the buffer size argument when reading strings.</p>
+<h3>Incorrect (missing buffer size)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">iReturnValue = scanf_s("%s", cArray);</code></pre>
+<h3>Correct (includes buffer size)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">iReturnValue = scanf_s("%s", cArray, (unsigned int)sizeof(cArray));</code></pre>
+<p>It is still good practice to use a width modifier:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">iReturnValue = scanf_s("%9s", cArray, (unsigned int)sizeof(cArray));</code></pre>
+<hr>
+<h2>Separating Input and Output into Functions</h2>
+<h3>Output helper: <code>printString</code></h3>
+<pre class="line-numbers d2l-code"><code class="language-c">/*
+* Purpose: Print a message followed by the string passed in.
+* Parameters: cPtr - the address of a buffer containing a string
+* Returns: nothing
+* Assumptions: cPtr contains a null-terminated string.
+*/
+void printString(const char* cPtr)
+{
+    printf("The result of reading in the string is:\n");
+    printf("%s\n", cPtr);
+}</code></pre>
+<p>Call it like this:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">printString(cArray);</code></pre>
+<h3>Pointer review (quick)</h3>
+<ul>
+<li>A pointer stores an address and is declared using <code>*</code> after the type (e.g., <code>char* p</code>).</li>
+<li>Pointers are 4 bytes on x86 and 8 bytes on x64.</li>
+</ul>
+<h3>Input helper: <code>readString</code> that builds a safe format specifier</h3>
+<p>To avoid overflow, we can build a format string like <code>"%6s"</code> dynamically using <code>strcat</code>.</p>
+<p><strong>Prototype:</strong></p>
+<pre class="line-numbers d2l-code"><code class="language-c">void readString(char* cPtr, const char* cLengthPtr);</code></pre>
+<p><strong>Implementation:</strong></p>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;string.h&gt;
+
+void readString(char* cPtr, const char* cLengthPtr)
+{
+    // Build a format specifier like "%6s" from cLengthPtr
+    char cFormat[8];   // bigger than 4 so it can hold multi-digit sizes if needed
+    cFormat[0] = '\0';
+
+    strcat(cFormat, "%");
+    strcat(cFormat, cLengthPtr);
+    strcat(cFormat, "s");
+
+    printf("Enter a string: ");
+    scanf(cFormat, cPtr);
+}</code></pre>
+<p><strong>Example usage:</strong></p>
+<pre class="line-numbers d2l-code"><code class="language-c">readString(cArray, "6");
+printString(cArray);</code></pre>
+<p><strong>Note:</strong> This assumes <code>cLengthPtr</code> is a valid string containing digits (e.g., <code>"6"</code>, <code>"12"</code>).</p>
+<hr>
+<h2>Test 2 — Using <code>scanf</code> to read multiple strings</h2>
+<p>You can read multiple values by including multiple specifiers in the format string.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">void test2(void)
+{
+    char cArray[10];
+    char cArray2[10];
+    int iReturnValue;
+
+    printf("Enter two strings separated by a space: ");
+    iReturnValue = scanf("%9s %9s", cArray, cArray2);
+
+    printString(cArray);
+    printString(cArray2);
+    printf("Returns: %d\n", iReturnValue);
+}</code></pre>
+<h3>What to notice</h3>
+<ul>
+<li>If you enter only one string, the program waits for the second.</li>
+<li>If you enter more than two strings, extras remain on the input stream.</li>
+<li>If the first token exceeds 9 chars, the remainder may become the second token.</li>
+<li>Return value should be <code>2</code> when two strings are read successfully.</li>
+</ul>
+<hr>
+<h2>Test 3 — Using <code>scanf</code> to read integers (and arrays)</h2>
+<pre class="line-numbers d2l-code"><code class="language-c">void readNumbers(int* iPtr);
+void printNumbers(const int* iPtr, int iSize);
+
+void test3(void)
+{
+    int iArray[5];
+    int iSize = (int)(sizeof(iArray) / sizeof(iArray[0]));
+
+    readNumbers(iArray);          // deliberately poor version shown below
+    printNumbers(iArray, iSize);
+}</code></pre>
+<h3>Reading a single integer</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">void readNumbers(int* iPtr)
+{
+    printf("Enter a number: ");
+    scanf("%d", iPtr);
+}</code></pre>
+<h3>Printing integers using pointer walking</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">void printNumbers(const int* iPtr, int iSize)
+{
+    printf("The numbers are:\n");
+    for (int i = 0; i &lt; iSize; i++)
+    {
+        printf("%d\n", iPtr[i]);
+    }
+}</code></pre>
+<h3>Deliberately unsafe version (demonstrates overflow risk)</h3>
+<p>This reads numbers until non-number input is entered, regardless of array size (do not write real code like this).</p>
+<pre class="line-numbers d2l-code"><code class="language-c">void readNumbers(int* iPtr)
+{
+    printf("Enter numbers (non-number to stop): ");
+    while (scanf("%d", iPtr))
+    {
+        iPtr++; // moves by sizeof(int) bytes each time
+    }
+}</code></pre>
+<h3>Why you must pass array size to functions</h3>
+<p>In a function parameter, the array has “decayed” into a pointer. That’s why <code>sizeof(iPtr)</code> gives pointer size, not array size:</p>
+<ul>
+<li>x86: <code>sizeof(iPtr)</code> is 4 bytes → <code>4 / 4 = 1</code> int</li>
+<li>x64: <code>sizeof(iPtr)</code> is 8 bytes → <code>8 / 4 = 2</code> ints</li>
+</ul>
+<hr>
+<h2>Test 4 — Using <code>gets</code>, <code>gets_s</code>, and <code>fgets</code></h2>
+<p><code>gets</code> is dangerous because it can overflow buffers and was removed from the C11 standard. Use <code>gets_s</code> (where available) or <code>fgets</code>.</p>
+<h3>Unsafe example (do not use in real code)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">void readStringGets(char* cPtr, int iBufferSize)
+{
+    printf("Enter a big string: ");
+    gets(cPtr); // unsafe: no length check
+}</code></pre>
+<h3>Safer: <code>gets_s</code></h3>
+<pre class="line-numbers d2l-code"><code class="language-c">gets_s(cPtr, iBufferSize);</code></pre>
+<h3>Safer + portable: <code>fgets</code></h3>
+<pre class="line-numbers d2l-code"><code class="language-c">fgets(cPtr, iBufferSize, stdin);</code></pre>
+<p>Note: <code>fgets</code> may store the newline <code>'\n'</code> if it fits in the buffer.</p>
+<hr>
+<h2>Mixing <code>scanf</code> with <code>gets_s</code>/<code>fgets</code>: newline issues</h2>
+<p><code>scanf</code> stops at whitespace and leaves the newline in the input stream. A following <code>gets_s</code> or <code>fgets</code> may read that newline immediately (resulting in an empty string).</p>
+<pre class="line-numbers d2l-code"><code class="language-c">int iValue;
+
+printf("Enter an int: ");
+scanf("%d", &amp;iValue);  // must pass address of iValue
+printf("You entered %d\n", iValue);</code></pre>
+<h3>Clearing up to the next newline</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">int c = getchar();
+while (c != '\n')
+{
+    c = getchar();
+}</code></pre>
+<p>A shorter (less readable) version:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">while (getchar() != '\n');</code></pre>
+<hr>
+<h2>Warning: returning a local buffer (stack memory)</h2>
+<p>Returning a pointer to a local array is unsafe because the array is allocated on the stack and becomes invalid after the function returns.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">char* readStringReturnBuffer(void)
+{
+    char cBuffer[256];
+
+    printf("Enter a big string: ");
+    gets_s(cBuffer, (unsigned)sizeof(cBuffer));
+
+    return cBuffer; // unsafe: returns address of stack memory
+}</code></pre>
+<p>Correct approaches:</p>
+<ul>
+<li>Pass the buffer into the function (recommended for most cases).</li>
+<li>Allocate memory dynamically (heap) and remember to free it later (covered later).</li>
+</ul>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>Microsoft Learn — scanf: https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/scanf-scanf-l-wscanf-wscanf-l?view=msvc-170</p>
+<p>Microsoft Learn — scanf_s: https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/scanf-s-scanf-s-l-wscanf-s-wscanf-s-l?view=msvc-170</p>
+<p>Microsoft Learn — gets/gets_s: https://learn.microsoft.com/en-us/cpp/c-runtime-library/gets-getws?view=msvc-170</p>
+<p>Microsoft Learn — fgets: https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/fgets-fgetws?view=msvc-170</p>
+<p>cppreference — gets: https://en.cppreference.com/w/c/io/gets</p>
+<p>cppreference — fgets: https://en.cppreference.com/w/c/io/fgets</p>
+<p>cppreference — scanf family: https://en.cppreference.com/w/c/io/fscanf</p>
+<p>cppreference — getchar: https://en.cppreference.com/w/c/io/getchar</p>
+<p>Microsoft Learn — strcat: https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/strcat-wcscat-mbscat?view=msvc-170</p>
+<p>cppreference — strcat: https://en.cppreference.com/w/c/string/byte/strcat</p>
+</div></body></html>

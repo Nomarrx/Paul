@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+<title>Lesson 6 — Arrays and Pointers</title>
+<script src="https://templates.lcs.brightspace.com/lib/assets/js/scripts.min.js" defer=""></script></head><body><h1>Lesson 6 — Arrays and Pointers</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Develop code to reference and manipulate static memory with pointers.</p>
+<p><strong>Assessment alignment:</strong> Midterm 1 (Arrays &amp; pointers / memory).</p>
+</div>
+</div>
+<h2>Arrays and Pointers</h2>
+<p>Arrays in C are not objects, so they do not have a length property and cannot be traversed using things like the for-each loop in Java. Instead, arrays are chunks of contiguous memory with a data type. When you “pass an array” to a function, you are passing the <strong>address of the first element</strong>, not the whole array object.</p>
+<p><strong>One-sentence takeaway:</strong> array notation <code>a[i]</code> and pointer notation <code>*(a + i)</code> are equivalent in C.</p>
+<h3>Memory diagram: a <code>short</code> array in little-endian memory</h3>
+<p>Example array: <code>short int sValues[] = { -32768, 9, 32767 };</code></p>
+<p>Each <code>short</code> is 2 bytes. On our typical platforms (x86/x64), memory is little-endian, so the least-significant byte comes first.</p>
+<table border="1" cellpadding="4">
+<tbody>
+<tr>
+<th>Byte offset (from base address of <code>sValues</code>)</th>
+<th>Byte value (hex)</th>
+<th>Interpreted <code>short</code> (hex → decimal)</th>
+<th>Array element</th>
+</tr>
+<tr>
+<td><code>base+0</code></td>
+<td><code>00</code></td>
+<td rowspan="2"><code>0x8000</code> → <code>-32768</code></td>
+<td rowspan="2"><code>sValues[0]</code></td>
+</tr>
+<tr>
+<td><code>base+1</code></td>
+<td><code>80</code></td>
+</tr>
+<tr>
+<td><code>base+2</code></td>
+<td><code>09</code></td>
+<td rowspan="2"><code>0x0009</code> → <code>9</code></td>
+<td rowspan="2"><code>sValues[1]</code></td>
+</tr>
+<tr>
+<td><code>base+3</code></td>
+<td><code>00</code></td>
+</tr>
+<tr>
+<td><code>base+4</code></td>
+<td><code>FF</code></td>
+<td rowspan="2"><code>0x7FFF</code> → <code>32767</code></td>
+<td rowspan="2"><code>sValues[2]</code></td>
+</tr>
+<tr>
+<td><code>base+5</code></td>
+<td><code>7F</code></td>
+</tr>
+</tbody>
+</table>
+<p>Notice how each element occupies consecutive bytes in memory. Arrays are simply “back-to-back” storage.</p>
+<hr>
+<h2>Exercise 1 — Print an array of ints (the “size problem”)</h2>
+<h3>Learning goal</h3>
+<p>Practice passing arrays correctly by passing both: (1) the start address of the array, and (2) the number of elements.</p>
+<h3>Starter code (main.c)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+void testIntArray(void);
+
+int main(void)
+{
+    testIntArray();
+    return EXIT_SUCCESS;
+}
+
+void testIntArray(void)
+{
+    int iArray[] = { 2, 7, 9 };
+    // TODO: call your printer here
+}</code></pre>
+<h3>Task</h3>
+<p>Create <code>array_pointers.h</code> and <code>array_pointers.c</code> with a function that prints: the index, the value, and the address of each element.</p>
+<h3>Output expectation</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">[0] value=2  address=0x...
+[1] value=7  address=0x...
+[2] value=9  address=0x...</code></pre>
+<h3>Hint</h3>
+<p>Compute array size in the same scope where it is declared, if you don't the sizeof function will grab the size of a pointer rather than the array itself:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">int iSize = (int)(sizeof(iArray) / sizeof(iArray[0]));</code></pre>
+<h3>Common mistake</h3>
+<p>If you compute the size inside the printer using <code>sizeof(iArrayPtr)</code>, you measure a <strong>pointer</strong>, not the array. That yields <code>1</code> (x86) or <code>2</code> (x64) ints, which is wrong for most arrays.</p>
+<p>&nbsp;</p>
+<div class="d2l-element mceNonEditable" data-idx="2" data-type="noicon" role="section" aria-describedby="d2l-uid-634">
+<p id="d2l-uid-634" class="sr-only">Click and Reveal</p>
+<div class="card card-standard card-reveal">
+<div class="card-body" data-prop="0|noicon">
+<div class="card-text">
+<p data-prop="1|null">Solution</p>
+<p class="instruction" data-prop="2|null">Please attempt to solve the previous example first</p>
+<button type="button" class="btn btn-primary btn-reveal" data-toggle="collapse" aria-expanded="false" data-prop="3|null">Show Answer||Hide Answer</button>
+<div class="collapse" tabindex="0">
+<div data-prop="4|null">
+<p><strong>array_pointers.h</strong></p>
+<pre class="line-numbers d2l-code"><code class="language-c">#ifndef ARRAY_POINTERS_H
+#define ARRAY_POINTERS_H
+
+void intArrayPrinter(const int* iPtr, int iSize);
+
+#endif</code></pre>
+<p><strong>array_pointers.c</strong></p>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+#include "array_pointers.h"
+
+void intArrayPrinter(const int* iPtr, int iSize)
+{
+    for (int i = 0; i &lt; iSize; i++)
+    {
+        printf("[%d] value=%d  address=%p\n", i, iPtr[i], (void*)&amp;iPtr[i]);
+    }
+}</code></pre>
+<p><strong>testIntArray</strong></p>
+<pre class="line-numbers d2l-code"><code class="language-c">#include "array_pointers.h"
+
+void testIntArray(void)
+{
+    int iArray[] = { 2, 7, 9 };
+    int iSize = (int)(sizeof(iArray) / sizeof(iArray[0]));
+
+    intArrayPrinter(iArray, iSize);
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<h3>Memory diagram: what an&nbsp;<code>int</code> array looks like conceptually</h3>
+<p>If the base address of the array is <code>base</code>, then element <code>i</code> lives at: <code>base + i * sizeof(int)</code>. Since <code>sizeof(int)</code> is typically 4 bytes, addresses increase by 4 each element.</p>
+<table border="1" cellpadding="4">
+<tbody>
+<tr>
+<th>Index</th>
+<th>Address</th>
+<th>Stored value</th>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td><code>base + 0 * 4</code></td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td><code>base + 1 * 4</code></td>
+<td><code>7</code></td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td><code>base + 2 * 4</code></td>
+<td><code>9</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Exercise 2 — Print an int array using pointer math</h2>
+<h3>Learning goal</h3>
+<p>See that <code>iPtr[i]</code> and <code>*(iPtr + i)</code> are identical.</p>
+<h3>Task</h3>
+<p>Write: <code>void intArrayPrinterPointerStyle(const int* iPtr, int iSize);</code> Print the same info as Exercise 1, but use the opposite syntax that you did to write exersice 1, EG if you used iPtr[i], use *(iPtr+i).</p>
+<p>&nbsp;</p>
+<div class="d2l-element mceNonEditable" data-idx="2" data-type="noicon" role="section" aria-describedby="d2l-uid-297">
+<p id="d2l-uid-297" class="sr-only">Click and Reveal</p>
+<div class="card card-standard card-reveal">
+<div class="card-body" data-prop="0|noicon">
+<div class="card-text">
+<p data-prop="1|null">Solution</p>
+<p class="instruction" data-prop="2|null">Attempt to make the function first</p>
+<button type="button" class="btn btn-primary btn-reveal" data-toggle="collapse" aria-expanded="false" data-prop="3|null">Show Answer||Hide Answer</button>
+<div class="collapse" tabindex="0">
+<div data-prop="4|null">
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+
+void intArrayPrinterPointerStyle(const int* iPtr, int iSize)
+{
+    for (int i = 0; i &lt; iSize; i++)
+    {
+        printf("[%d] value=%d  address=%p\n",
+               i, *(iPtr + i), (void*)(iPtr + i));
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<hr>
+<h2>Exercise 3 — Walk the pointer through the array (“pointer walking”)</h2>
+<h3>Learning goal</h3>
+<p>Understand that incrementing a pointer changes the address it stores. Write a function void intArrayPrinterWalk(const int* iPtr, int iSize) , that will show the pointers location at the end of a loop. Modify the previous exercise to show the pointers value AFTER the loop has finished.</p>
+<p>&nbsp;</p>
+<div class="d2l-element mceNonEditable" data-idx="2" data-type="noicon" role="section" aria-describedby="d2l-uid-297">
+<p id="d2l-uid-297" class="sr-only">Click and Reveal</p>
+<div class="card card-standard card-reveal">
+<div class="card-body" data-prop="0|noicon">
+<div class="card-text">
+<p data-prop="1|null">Solution</p>
+<p class="instruction" data-prop="2|null">Attempt to make the function first</p>
+<button type="button" class="btn btn-primary btn-reveal" data-toggle="collapse" aria-expanded="false" data-prop="3|null">Show Answer||Hide Answer</button>
+<div class="collapse" tabindex="0">
+<div data-prop="4|null">
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+
+void intArrayPrinterWalk(const int* iPtr, int iSize)
+{
+    for (int i = 0; i &lt; iSize; i++)
+    {
+        printf("[%d] value=%d  address=%p\n", i, *iPtr, (void*)iPtr);
+        iPtr++;
+    }
+
+    // After the loop, iPtr points one past the end (legal to compute, illegal to dereference).
+    printf("final iPtr (one past end) = %p\n", (void*)iPtr);
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<hr>
+<h2>Exercise 4 — Print a string one character at a time</h2>
+<h3>Learning goal</h3>
+<p>Use a <code>const char*</code> to walk through a null-terminated string.</p>
+<h3>Starter test function</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">void testCharArrayPrintPointer(void)
+{
+    char msg[] = "Hello world!";
+    charArrayPrinterWithPointer(msg);
+}</code></pre>
+<p></p>
+<div class="d2l-element mceNonEditable" data-idx="2" data-type="noicon" role="section" aria-describedby="d2l-uid-297">
+<p id="d2l-uid-297" class="sr-only">Click and Reveal</p>
+<div class="card card-standard card-reveal">
+<div class="card-body" data-prop="0|noicon">
+<div class="card-text">
+<p data-prop="1|null">Solution</p>
+<p class="instruction" data-prop="2|null">Attempt to make the function first</p>
+<button type="button" class="btn btn-primary btn-reveal" data-toggle="collapse" aria-expanded="false" data-prop="3|null">Show Answer||Hide Answer</button>
+<div class="collapse" tabindex="0">
+<div data-prop="4|null">
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+
+void charArrayPrinterWithPointer(const char* cPtr)
+{
+    while (*cPtr != '\0')
+    {
+        putchar(*cPtr);
+        cPtr++;
+    }
+    putchar('\n');
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr>
+<h2>Exercise 5 — Print the bytes in an integer</h2>
+<h3>Learning goal</h3>
+<p>Use an <code>unsigned char*</code> to inspect bytes of an <code>int</code> one byte at a time. This connects directly to endianness.</p>
+<p></p>
+<div class="d2l-element mceNonEditable" data-idx="2" data-type="noicon" role="section" aria-describedby="d2l-uid-297">
+<p id="d2l-uid-297" class="sr-only">Click and Reveal</p>
+<div class="card card-standard card-reveal">
+<div class="card-body" data-prop="0|noicon">
+<div class="card-text">
+<p data-prop="1|null">Solution</p>
+<p class="instruction" data-prop="2|null">Attempt to make the function first</p>
+<button type="button" class="btn btn-primary btn-reveal" data-toggle="collapse" aria-expanded="false" data-prop="3|null">Show Answer||Hide Answer</button>
+<div class="collapse" tabindex="0">
+<div data-prop="4|null">
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+
+void intBytePrinter(int iValue)
+{
+    printf("int as hex: 0x%x\n", iValue);
+
+    const unsigned char* cPtr = (const unsigned char*)&amp;iValue;
+
+    for (int i = 0; i &lt; (int)sizeof(int); i++)
+    {
+        unsigned char b = cPtr[i];
+        printf("byte[%d]=0x%02x  char=%c\n",
+               i, b, (b &gt;= 32 &amp;&amp; b &lt;= 126) ? b : '.');
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<hr>
+<h2>Exercise 6 — Print a string as ints (with memory diagrams)</h2>
+<h3>Stage A — Read a full line safely (spaces allowed)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+#define BUFFER_SIZE 64
+
+void printStringAsInts(const char* s);
+
+void testStringToInts(void)
+{
+    char cBuffer[BUFFER_SIZE];
+
+    printf("Enter a string (spaces allowed): ");
+    fgets(cBuffer, BUFFER_SIZE, stdin);
+
+    // Remove trailing newline if present
+    size_t len = strlen(cBuffer);
+    if (len &gt; 0 &amp;&amp; cBuffer[len - 1] == '\n')
+    {
+        cBuffer[len - 1] = '\0';
+    }
+
+    printStringAsInts(cBuffer);
+}</code></pre>
+<h3>Memory diagram: converting <code>"abcdefgh"</code> into <code>int</code> chunks</h3>
+<p>ASCII hex for characters: <code>a=61</code>, <code>b=62</code>, <code>c=63</code>, <code>d=64</code>, <code>e=65</code>, <code>f=66</code>, <code>g=67</code>, <code>h=68</code>. The null terminator is <code>00</code>.</p>
+<table border="1" cellpadding="4">
+<tbody>
+<tr>
+<th>Bytes in memory (low → high addresses)</th>
+<th>Grouping as 4-byte <code>int</code> (little-endian)</th>
+<th><code>int</code> value (hex)</th>
+<th><code>int</code> value (decimal)</th>
+</tr>
+<tr>
+<td><code>61 62 63 64</code> (a b c d)</td>
+<td>byte0=a, byte1=b, byte2=c, byte3=d</td>
+<td><code>0x64636261</code></td>
+<td><code>1684234849</code></td>
+</tr>
+<tr>
+<td><code>65 66 67 68</code> (e f g h)</td>
+<td>byte0=e, byte1=f, byte2=g, byte3=h</td>
+<td><code>0x68676665</code></td>
+<td><code>1751606885</code></td>
+</tr>
+<tr>
+<td><code>00</code> (null terminator)</td>
+<td>(included in total bytes; may be part of “leftover”)</td>
+<td colspan="2">(depends on string length)</td>
+</tr>
+</tbody>
+</table>
+<h3>Helper (build an int from leftover bytes)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">int buildIntFromBytes(const unsigned char* bytes, int count)
+{
+    int value = 0;
+    unsigned char* out = (unsigned char*)&amp;value;
+
+    for (int i = 0; i &lt; count; i++)
+    {
+        out[i] = bytes[i];
+    }
+    return value;
+}</code></pre>
+<p></p>
+<div class="d2l-element mceNonEditable" data-idx="2" data-type="noicon" role="section" aria-describedby="d2l-uid-297">
+<p id="d2l-uid-297" class="sr-only">Click and Reveal</p>
+<div class="card card-standard card-reveal">
+<div class="card-body" data-prop="0|noicon">
+<div class="card-text">
+<p data-prop="1|null">Solution</p>
+<p class="instruction" data-prop="2|null">Attempt to make the function first</p>
+<button type="button" class="btn btn-primary btn-reveal" data-toggle="collapse" aria-expanded="false" data-prop="3|null">Show Answer||Hide Answer</button>
+<div class="collapse" tabindex="0">
+<div data-prop="4|null">
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int buildIntFromBytes(const unsigned char* bytes, int count);
+
+void printStringAsInts(const char* s)
+{
+    int totalBytes = (int)strlen(s) + 1;                 // include '\0'
+    int fullInts   = totalBytes / (int)sizeof(int);
+    int leftover   = totalBytes % (int)sizeof(int);
+
+    const int* iPtr = (const int*)s;
+
+    printf("totalBytes=%d, fullInts=%d, leftover=%d\n",
+           totalBytes, fullInts, leftover);
+
+    printf("'%s' converted to integers is:\n", s);
+
+    for (int i = 0; i &lt; fullInts; i++)
+    {
+        printf("0x%x\t%d\n", iPtr[i], iPtr[i]);
+        // Optional verification:
+        // intBytePrinter(iPtr[i]);
+    }
+
+    if (leftover &gt; 0)
+    {
+        // Point to remaining bytes after the last full int
+        const unsigned char* last = (const unsigned char*)(iPtr + fullInts);
+        int extra = buildIntFromBytes(last, leftover);
+
+        printf("(extra) 0x%x\t%d\n", extra, extra);
+        // Optional verification:
+        // intBytePrinter(extra);
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h3>Memory diagram: leftover bytes example (<code>"abcdefghij"</code>)</h3>
+<p>If the input is <code>"abcdefghij"</code>, then including the null terminator there are 11 bytes total. That gives 2 full ints (8 bytes), and 3 leftover bytes: <code>i</code>, <code>j</code>, and <code>'\0'</code>. The helper function packs those leftover bytes into the low bytes of a new int.</p>
+<table border="1" cellpadding="4">
+<tbody>
+<tr>
+<th>Remaining bytes (low → high)</th>
+<th>Packed into a new <code>int</code> (byte0..byte3)</th>
+<th>New <code>int</code> value (hex)</th>
+<th>New <code>int</code> value (decimal)</th>
+</tr>
+<tr>
+<td><code>69 6A 00</code> (i j \0)</td>
+<td><code>69 6A 00 00</code></td>
+<td><code>0x00006A69</code></td>
+<td><code>27241</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Try these inputs</h3>
+<ul>
+<li><code>abcdefgh</code></li>
+<li><code>I/O</code></li>
+<li><code>PointersRFun!!!!!!!</code></li>
+</ul>
+<p><strong>Note:</strong> This is a memory-layout exercise. In production code, you would typically use <code>memcpy</code> to avoid alignment/aliasing concerns, but for learning purposes this makes memory interpretation very visible.</p>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>cppreference — Arrays (C): https://en.cppreference.com/w/c/language/array</p>
+<p>cppreference — Pointer arithmetic: https://en.cppreference.com/w/c/language/pointer</p>
+<p>cppreference — strlen: https://en.cppreference.com/w/c/string/byte/strlen</p>
+<p>cppreference — fgets: https://en.cppreference.com/w/c/io/fgets</p>
+</div></body></html>

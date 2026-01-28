@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/SP-Global-2015.css"><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/SP-bootstrap-grid.css"><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script><script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/jquery-ui.min.css"><script src="https://online.saskpolytech.ca/shared/sp-template/scripts/snippets/accordion.js"></script><script>$(document).ready(function(){ $("h1:first").addClass("sr-only"); });</script><title>Lesson 02 Basics - Pointers</title></head><body><h1>Lesson 02 Basics - Pointers</h1><div class="row"><div class="col-sm-12"><h2 class="h2">Pointers</h2><p class="lead">Quick highlights:</p><ul class="list"><li>Store addresses; print with <code>%p</code></li><li>Dereference: <code>*</code>; address-of: <code>&amp;</code></li></ul><hr><h3 class="h3">Details</h3>
+<p>C also has another class of data types, which are pointers. A pointer is a variable that stores a memory address. Because other data is stored at a memory address, a pointer “points” to that other data.</p>
+<p>A pointer is declared with another data type followed by an asterisk, like the following:</p>
+<p>	char* cPtr; // a pointer to a char</p>
+<p>	int* iPtr; // a pointer to an int</p>
+<p>We generally initialize pointers to either the address of data or NULL, a special value for the address 0 that is defined in stdio.h or stdlib.h. Any attempt to access the memory location NULL will cause an error (crashing the program), so setting pointers to NULL means that you won’t accidentally access memory that you shouldn’t access.</p>
+<p>How big are pointers? It depends on the platform that you are working on. Try adding the following code in main:</p>
+<p>	pointerDemo();</p>
+<p>Then above main, add the following pointerDemo function:</p>
+<br><pre><code class="language-c">void pointerDemo()
+{
+	char cArray[] = &quot;This is a char array with a null terminator&quot;;</code></pre>
+<p>	char* cPtr = cArray; // a pointer to a char, set to the address of cArray</p>
+<p>	int* iPtr = NULL; // a pointer to an int, set to NULL</p>
+<p>	int iValue = 42424242;</p>
+<br><pre><code class="language-c">	printf(&quot;Size of cArray: \t%zu\n&quot;, sizeof(cArray));
+	printf(&quot;Size of cPtr: \t%zu\n&quot;, sizeof(cPtr));
+	printf(&quot;Size of iPtr: \t%zu\n&quot;, sizeof(iPtr));
+}</code></pre>
+<p>Run the program with the x64 platform selected from the Standard toolbar and you will find that the size of cArray is 44 bytes (43 characters plus the null terminator), and the size of both pointers is 8 bytes (or 64 bits, since x64 is a 64-bit platform and has 64-bit addresses). Remember that the pointer stores an address, so whether it is the address of a char or the address of an int, it will be the same size!</p>
+<p>Now try with the x86 platform selected. You will find that the size of the pointers is 4 bytes (or 32 bits, since x86 is a 32-bit platform).</p>
+<p>To print out a pointer, use the &quot;%p&quot; specifier. Try adding the following in pointerDemo:</p>
+<br><pre><code class="language-c">	printf(&quot;Value of cArray: \t%p\n&quot;, cArray);</code></pre>
+<p>	// This works because cArray is the address of the start of the array</p>
+<br><pre><code class="language-c">	printf(&quot;Value of cPtr: \t%p\n&quot;, cPtr); // recall cPtr = cArray;
+	printf(&quot;Value of iPtr: \t%p\n&quot;, iPtr); // recall iPtr = NULL;</code></pre>
+<p>You will see that pointers print out in hexadecimal with 8 digits (in the x86 platform) or 16 digits (in the x64 platform). You will also see that the addresses (like cArray, which is the address of the array of characters) vary every time that you run the program. That is because by default, the project is set to use a randomized base address for security.</p>
+<p>Pointers can be set using the “address of” operator &amp;. For instance, we can set iPtr = &amp;iValue; so that iPtr contains the address of the variable iPtr. Try adding that to pointerDemo:</p>
+<p>	iPtr = &amp;iValue;</p>
+<br><pre><code class="language-c">	printf(&quot;New value of iPtr: \t%p\n&quot;, iPtr);</code></pre>
+<p>You will notice that iPtr now contains an address that is near the address of cArray. Note that we didn’t need to use the “address of” operator when initializing cPtr = cArray; because the name of an array is the address of the array, although you could also do cPtr = &amp;cArray; without a problem.</p>
+<p>Pointers can be “dereferenced” using the indirection operator * (which is also used for multiplication, of course). Dereferencing a pointer gives back a value of the pointer’s data type. Thus, dereferencing a char* will give back a char (one byte, which can be printed as a character or a decimal value or a hexadecimal value), while dereferencing an int* will give back an int. Try adding the following in pointerDemo:</p>
+<br><pre><code class="language-c">	printf(&quot;cPtr dereferences as %c or %d or %x\n&quot;, *cPtr, *cPtr, *cPtr);
+	printf(&quot;iPtr dereferences as %d or %x\n&quot;, *iPtr, *iPtr);</code></pre>
+<p>You will see that cPtr dereferences as &#x27;T&#x27; (from cArray’s &quot;This…&quot;) or 84 (the decimal ASCII value of the character &#x27;T&#x27;) or 54 (the hexadecimal ASCII value of the character &#x27;T&#x27;). You can verify the ASCII character values by googling “ASCII table” for a site like https://www.asciitable.com/ or https://www.rapidtables.com/code/text/ascii-table.html. Note that some students think that the computer stores either a &#x27;T&#x27; or 84 or 0x54 (the “0x” prefix just means hexadecimal), but the computer really just stores an 8-bit pattern which we can interpret as either a character or a decimal value or a hexadecimal value.</p>
+<p>Similarly, iPtr dereferences as 42424242 decimal or 28757b2 in hexadecimal. You can verify that these are the same number by using the Windows Calculator. Go to the three bars in the top-left corner and from the menu, choose the Programmer calculator. Type in the decimal value 42,424,242 and note that the HEX value displays as 287 57B2. You can also click on HEX and enter a hexadecimal value and see the corresponding decimal conversion. Get familiar with the Programmer Calculator – you will find that it is useful throughout the class!</p>
+</div></div></body></html>

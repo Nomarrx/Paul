@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/SP-Global-2015.css"><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/SP-bootstrap-grid.css"><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script><script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/jquery-ui.min.css"><script src="https://online.saskpolytech.ca/shared/sp-template/scripts/snippets/accordion.js"></script><script>$(document).ready(function(){ $("h1:first").addClass("sr-only"); });</script><title>Lesson 02 Basics - Casting</title></head><body><h1>Lesson 02 Basics - Casting</h1><div class="row"><div class="col-sm-12"><h2 class="h2">Casting</h2><p class="lead">Quick highlights:</p><ul class="list"><li>Implicit casts may truncate</li><li>Explicit cast: <code>(type)expr</code></li></ul><hr><h3 class="h3">Details</h3>
+<p>C does implicit casting whenever it can. Unlike Java, it will implicitly cast a larger data type to a smaller data type without error (Visual Studio will show a warning), even if it results in loss of precision. You can also explicitly cast values by using the data type in parentheses (as in Java).</p>
+<p>Try adding the following code in main:</p>
+<p>	castDemo();</p>
+<p>Then above main, add the following castDemo function:</p>
+<br><pre><code class="language-c">void castDemo()
+{</code></pre>
+<p>	int myInt;</p>
+<p>	float myFloat = 3.2; // 3.2 is a double literal, implicitly cast to float</p>
+<p>	float fahr = 115; // 115 is an integer literal, implicitly cast to float</p>
+<p>	float celc; // Note that uninitialized values may have random numbers</p>
+<p>	// Assign myFloat to myInt</p>
+<p>	myInt = myFloat; // implicitly cast</p>
+<br><pre><code class="language-c">	printf(&quot;The value of myInt is %d\n&quot;, myInt);</code></pre>
+<p>	myInt = (int)myFloat; // explicitly cast</p>
+<br><pre><code class="language-c">	printf(&quot;The value of myInt is %d\n&quot;, myInt);</code></pre>
+<p>	// Temperature conversion</p>
+<br><pre><code class="language-c">	printf(&quot;The temperature in Fahrenheit is %f\n&quot;, fahr);</code></pre>
+<p>	celc = ((float)5 / 9) * (fahr - 32); // cast to avoid integer division</p>
+<p>		// could also use 5.0 or 5.0f, 9.0 or 9.0f, etc.</p>
+<br><pre><code class="language-c">	printf(&quot;The temperature in Celsius is %f\n&quot;, celc);
+}</code></pre>
+</div></div></body></html>
