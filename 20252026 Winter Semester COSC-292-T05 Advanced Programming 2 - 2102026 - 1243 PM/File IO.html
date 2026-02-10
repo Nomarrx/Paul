@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+<title>Lesson — File I/O</title>
+</head><body><h1>Lesson — File I/O</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO3 — Use language libraries and functions when developing a procedural program.</p>
+<p><strong>Assessment alignment:</strong> Midterm 1 (File I/O).</p>
+</div>
+</div>
+<h2>File I/O</h2>
+<p>Next, let’s examine file input/output in C. C treats files as streams of input or output, accessed through a <code>FILE*</code> (defined in <code>&lt;stdio.h&gt;</code>).</p>
+<h3>File access modes (text files)</h3>
+<table border="1" cellpadding="4">
+<tbody>
+<tr>
+<th>Mode</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>r</code></td>
+<td>Opens an existing text file for reading.</td>
+</tr>
+<tr>
+<td><code>w</code></td>
+<td>Opens a text file for writing. If the file exists, content is overwritten (truncated). If it does not exist, it is created.</td>
+</tr>
+<tr>
+<td><code>a</code></td>
+<td>Opens a text file for writing in append mode. If the file does not exist, it is created. Writing occurs after existing content.</td>
+</tr>
+<tr>
+<td><code>r+</code></td>
+<td>Opens a text file for both reading and writing (file must already exist).</td>
+</tr>
+<tr>
+<td><code>w+</code></td>
+<td>Opens a text file for reading and writing. If it exists, it is truncated to zero length; otherwise it is created.</td>
+</tr>
+<tr>
+<td><code>a+</code></td>
+<td>Opens a text file for reading and writing. If it does not exist, it is created. Reading starts at beginning; writing appends.</td>
+</tr>
+</tbody>
+</table>
+<h3>Binary access modes</h3>
+<p>For binary files, use the same ideas but include <code>b</code>: <code>"rb"</code>, <code>"wb"</code>, <code>"ab"</code>, <code>"rb+"</code>, <code>"r+b"</code>, <code>"wb+"</code>, <code>"w+b"</code>, <code>"ab+"</code>, <code>"a+b"</code>.</p>
+<hr>
+<h2>Opening and closing files</h2>
+<h3>Starter: main calls <code>testOpenClose</code></h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+void testOpenClose(void);
+
+int main(void)
+{
+    testOpenClose();
+    return EXIT_SUCCESS;
+}</code></pre>
+<h3>Test function</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">int demoOpenClose(const char* cFileName, const char* cFileMode);
+
+void testOpenClose(void)
+{
+    int iErr = demoOpenClose("foo.txt", "r");
+    printf("The error number returned was %d\n", iErr);
+}</code></pre>
+<h3>Error reporting with <code>errno</code> and <code>strerror</code></h3>
+<p>File errors are commonly reported via the global variable <code>errno</code> (from <code>&lt;errno.h&gt;</code>). The function <code>strerror(errno)</code> converts the error number into a human-readable message (requires <code>&lt;string.h&gt;</code>).</p>
+<p>Wikipedia: errno.h — https://en.wikipedia.org/wiki/Errno.h<br>strerror: https://en.cppreference.com/w/c/string/byte/strerror or https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/strerror-strerror-wcserror-wcserror?view=msvc-170</p>
+<h3>demoOpenClose (using fopen)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#define _CRT_SECURE_NO_WARNINGS
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+
+int demoOpenClose(const char* cFileName, const char* cFileMode)
+{
+    FILE* filePtr = NULL;
+    int iErr = EXIT_SUCCESS;
+
+    filePtr = fopen(cFileName, cFileMode);
+    if (filePtr != NULL)
+    {
+        fclose(filePtr);
+        printf("%s was successfully opened and closed.\n", cFileName);
+    }
+    else
+    {
+        iErr = errno;
+        printf("Error accessing file %s: %s\n", cFileName, strerror(iErr));
+    }
+
+    return iErr;
+}</code></pre>
+<h3>Try these experiments</h3>
+<ul>
+<li>Use mode <code>"r"</code> with a file that does not exist → expect an error such as “No such file or directory”.</li>
+<li>Use mode <code>"w"</code> → creates the file if it doesn’t exist, and overwrites if it does.</li>
+<li>Set file to read-only and attempt mode <code>"w"</code> → expect “Permission denied”.</li>
+</ul>
+<h3>Using <code>fopen_s</code> (Microsoft compilers)</h3>
+<p><code>fopen_s</code> stores the resulting <code>FILE*</code> through a pointer-to-pointer parameter.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">FILE* filePtr = NULL;
+fopen_s(&amp;filePtr, cFileName, cFileMode);</code></pre>
+<hr>
+<h2>Reading files</h2>
+<h3>main calls <code>testRead</code></h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+void testRead(void);
+
+int main(void)
+{
+    //testOpenClose();
+    testRead();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+<h3>Test function</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">int demoRead(const char* cFileName, const char* cFileMode);
+
+void testRead(void)
+{
+    int iErr = demoRead("foo.txt", "r");
+    printf("The error number returned was %d\n", iErr);
+}</code></pre>
+<h3>Starter demoRead (open the file, set up buffers)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#define _CRT_SECURE_NO_WARNINGS
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+
+#define MAX_SIZE 100
+
+int demoRead(const char* cFileName, const char* cFileMode)
+{
+    FILE* filePtr = NULL;
+    int iErr = EXIT_SUCCESS;
+
+    int intChar, retVal;
+    char cBuffer[MAX_SIZE];
+    char* retPtr = NULL;
+
+    if ((filePtr = fopen(cFileName, cFileMode)) != NULL)
+    {
+        // TODO: choose ONE read method below (fscanf, fgets, fgetc, fread)
+        fclose(filePtr);
+    }
+    else
+    {
+        iErr = errno;
+        printf("Error accessing the file %s: %s\n", cFileName, strerror(iErr));
+    }
+
+    return iErr;
+}</code></pre>
+<h3>Note: common C pattern (assign + check in one line)</h3>
+<p>You will often see code like: <code>if ((filePtr = fopen(...)) != NULL)</code>. It opens the file and checks success in one line. It’s OK to split it into multiple lines if you prefer.</p>
+<hr>
+<h2>Read method 1: <code>fscanf</code> (token-based)</h2>
+<p><code>fscanf</code> is to files what <code>scanf</code> is to stdin. It reads tokens and stops at whitespace for <code>%s</code>.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">retVal = fscanf(filePtr, "%99s", cBuffer); // quits at first space
+
+if (retVal &gt; 0)
+{
+    printf("retVal: %d\n", retVal);
+    printf("cBuffer: %s\n", cBuffer);
+}
+else
+{
+    if ((iErr = ferror(filePtr)) != 0)
+    {
+        printf("Error reading from the file %s: %s\n", cFileName, strerror(iErr));
+    }
+    else
+    {
+        printf("Could not retrieve data\n");
+    }
+}</code></pre>
+<p>Example: if <code>foo.txt</code> contains: <code>Hello world</code> then you’ll read only <code>Hello</code> with <code>%s</code>.</p>
+<p>If the file is empty, <code>fscanf</code> may return <code>EOF</code> (often -1).</p>
+<hr>
+<h2>Read method 2: <code>fgets</code> (line-based)</h2>
+<p><code>fgets</code> reads up to a newline or buffer limit, and it always null-terminates the string. If the newline fits in the buffer, it will include it.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">retPtr = fgets(cBuffer, MAX_SIZE, filePtr);
+
+if (retPtr != NULL)
+{
+    printf("retPtr: %p\n", retPtr);
+    printf("cBuffer: %p\n", cBuffer);
+    printf("cBuffer: %s\n", cBuffer);
+}
+else
+{
+    printf("Could not retrieve data\n");
+}</code></pre>
+<p>Notice: <code>retPtr</code> should equal <code>cBuffer</code> (it returns the address of the buffer).</p>
+<hr>
+<h2>Read method 3: <code>fgetc</code> (single character)</h2>
+<p><code>fgetc</code> returns an <code>int</code>, not a <code>char</code>, so it can represent <code>EOF</code>.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">intChar = fgetc(filePtr);
+
+if (intChar != EOF)
+{
+    printf("intChar: %d\n", intChar);
+    printf("intChar: %c\n", intChar);
+}
+else
+{
+    printf("Could not retrieve data\n");
+}</code></pre>
+<hr>
+<h2>Read method 4: <code>fread</code> (raw bytes; no null terminator)</h2>
+<p><code>fread</code> reads raw bytes into memory. It does <strong>not</strong> append a null terminator. If you print the buffer as a string without adding <code>'\0'</code>, you may get garbage output.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">retVal = fread((void*)cBuffer, sizeof(char), 2, filePtr);
+
+if (retVal &gt; 0)
+{
+    // IMPORTANT: add a null terminator if you want to print as a string
+    if (retVal &lt; MAX_SIZE)
+    {
+        cBuffer[retVal] = '\0';
+    }
+
+    printf("retVal: %d\n", retVal);
+    printf("cBuffer: %s\n", cBuffer);
+}
+else
+{
+    printf("Could not retrieve data\n");
+}</code></pre>
+<p>The added null terminator makes the output stable and prevents <code>printf("%s")</code> from reading past your data.</p>
+<hr>
+<h2>Writing files</h2>
+<h3>Test function</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">int demoWrite(const char* cFileName, const char* cFileMode, const char* cDataPtr);
+
+void testWrite(void)
+{
+    int iErr = demoWrite("foobar.txt", "w", "abcdefghi");
+    printf("The error number was %d\n", iErr);
+}</code></pre>
+<h3>Starter demoWrite</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#define _CRT_SECURE_NO_WARNINGS
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+
+int demoWrite(const char* cFileName, const char* cFileMode, const char* cDataPtr)
+{
+    FILE* filePtr = NULL;
+    int iErr = EXIT_SUCCESS;
+    int retVal;
+
+    if ((filePtr = fopen(cFileName, cFileMode)) != NULL)
+    {
+        // TODO: choose ONE write method below (fwrite, fprintf, fputs, fputc)
+        fclose(filePtr);
+    }
+    else
+    {
+        iErr = errno;
+        printf("Error accessing the file %s: %s\n", cFileName, strerror(iErr));
+    }
+
+    return iErr;
+}</code></pre>
+<hr>
+<h2>Write method 1: <code>fwrite</code> (raw bytes)</h2>
+<pre class="line-numbers d2l-code"><code class="language-c">retVal = fwrite((void*)cDataPtr, sizeof(char), (int)strlen(cDataPtr), filePtr);
+
+if (retVal &gt; 0)
+{
+    printf("File written: %s\n", cFileName);
+    printf("retVal: %d\n", retVal);
+}
+else
+{
+    if ((iErr = ferror(filePtr)) != 0)
+    {
+        printf("Error writing to the file %s: %s\n", cFileName, strerror(iErr));
+    }
+    else
+    {
+        printf("Could not write the data\n");
+    }
+}</code></pre>
+<p>Try mode <code>"a"</code> to append: write twice and observe the file becomes <code>abcdefghiabcdefghi</code>.</p>
+<hr>
+<h2>Write method 2: <code>fprintf</code> (formatted text)</h2>
+<p><code>fprintf</code> is like <code>printf</code> but writes into a file stream. It returns the number of characters written.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">retVal = fprintf(filePtr, "%s and %d\nHi\n", cDataPtr, 456);
+
+if (retVal &gt; 0)
+{
+    printf("File written: %s\n", cFileName);
+    printf("retVal: %d\n", retVal);
+}
+else
+{
+    printf("Could not write the data\n");
+}</code></pre>
+<p>Note: on Windows, newline is typically stored as CR+LF (two bytes), which can make file size larger than you expect.</p>
+<hr>
+<h2>Write method 3: <code>fputs</code> (string)</h2>
+<p><code>fputs</code> returns <code>0</code> on success (unlike most functions that return a positive count). It does not add a newline or null terminator to the file.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">retVal = fputs(cDataPtr, filePtr);
+
+if (retVal == 0)
+{
+    printf("File written: %s\n", cFileName);
+    printf("retVal: %d\n", retVal);
+}
+else
+{
+    printf("Could not write the data\n");
+}</code></pre>
+<hr>
+<h2>Write method 4: <code>fputc</code> (single character)</h2>
+<p><code>fputc</code> writes one character and returns that character value if successful.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">retVal = fputc(cDataPtr[0], filePtr);
+
+if (retVal &gt; 0)
+{
+    printf("File written: %s\n", cFileName);
+    printf("retVal: %d\n", retVal);
+}
+else
+{
+    printf("Could not write the data\n");
+}</code></pre>
+<hr>
+<h2>Writing binary files</h2>
+<p>Text files store human-readable characters. Binary files store the internal byte representation of values (compact, but not human-friendly).</p>
+<h3>Test function</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">int demoWriteBinary(const char* cFileName, const char* cFileMode, int* iDataPtr);
+
+void testWriteBinary(void)
+{
+    int x = 123456789;
+    int iErr = demoWriteBinary("foobar.bin", "wb", &amp;x);
+
+    printf("The number that was passed in (in hex) was %x\n", x);
+    printf("The error number that was returned was %d\n", iErr);
+}</code></pre>
+<h3>demoWriteBinary (using fwrite)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#define _CRT_SECURE_NO_WARNINGS
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+
+int demoWriteBinary(const char* cFileName, const char* cFileMode, int* iDataPtr)
+{
+    FILE* filePtr = NULL;
+    int iErr = EXIT_SUCCESS;
+    int retVal;
+
+    if ((filePtr = fopen(cFileName, cFileMode)) != NULL)
+    {
+        retVal = fwrite((void*)iDataPtr, sizeof(int), 1, filePtr);
+
+        if (retVal &gt; 0)
+        {
+            printf("File written: %s\n", cFileName);
+            printf("retVal: %d\n", retVal);
+        }
+        else
+        {
+            if ((iErr = ferror(filePtr)) != 0)
+            {
+                printf("Error writing to file %s: %s\n", cFileName, strerror(iErr));
+            }
+            else
+            {
+                printf("Could not write the data\n");
+            }
+        }
+
+        fclose(filePtr);
+    }
+    else
+    {
+        iErr = errno;
+        printf("Error accessing the file %s: %s\n", cFileName, strerror(iErr));
+    }
+
+    return iErr;
+}</code></pre>
+<p>The resulting file size should be <code>4</code> bytes (size of an int). Viewing the file in a text editor will show “garbage” characters, which is normal.</p>
+<hr>
+<h2>File I/O Exercise — Fixed-length binary records</h2>
+<p>Write a program that stores <strong>3 records</strong> in a binary file. Each record contains:</p>
+<ul>
+<li>SIN # (integer)</li>
+<li>Name (fixed-length char array of <code>MAX_NAME_SIZE</code>)</li>
+</ul>
+<h3>Requirements</h3>
+<ul>
+<li>Use <code>scanf</code> for SIN input.</li>
+<li>Remove the trailing newline left by <code>scanf</code> before reading the name.</li>
+<li>Use <code>gets_s</code> or <code>fgets</code> to read the name (so spaces are allowed).</li>
+<li>Write the record data using <code>fwrite</code>.</li>
+<li>Write the number of records at the start of the file to make reading easier.</li>
+<li>Then read back the file and print all records.</li>
+<li>Bonus: ask for a SIN # and look up the matching name using <code>fseek</code> to skip names that don’t match.</li>
+</ul>
+<h3>Solution (visible)</h3>
+<p><strong>Constants and prototypes</strong></p>
+<pre class="line-numbers d2l-code"><code class="language-c">#define _CRT_SECURE_NO_WARNINGS
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+
+#define MAX_NAME_SIZE 20
+#define NUM_RECORDS 3
+
+int exerciseBinaryWrite(const char* cFileName, const char* cFileMode);
+int exerciseBinaryRead(const char* cFileName, const char* cFileMode, int iSeek);</code></pre>
+<p><strong>Write function</strong></p>
+<pre class="line-numbers d2l-code"><code class="language-c">int exerciseBinaryWrite(const char* cFileName, const char* cFileMode)
+{
+    FILE* filePtr = NULL;
+    int iErr = 0;
+
+    int iSin, retSin, retName;
+    char cNameArray[MAX_NAME_SIZE];
+    unsigned short sNumRecords = NUM_RECORDS;
+
+    if ((filePtr = fopen(cFileName, cFileMode)) != NULL)
+    {
+        // Write number of records (2 bytes)
+        fwrite((void*)&amp;sNumRecords, sizeof(unsigned short), 1, filePtr);
+
+        for (int i = 0; i &lt; sNumRecords; i++)
+        {
+            printf("Enter SIN number: ");
+            scanf("%d", &amp;iSin);
+
+            // Clear one newline (assumes user pressed Enter immediately)
+            getc(stdin);
+
+            printf("Enter the name: ");
+            gets_s(cNameArray, MAX_NAME_SIZE);
+
+            retSin = fwrite((void*)&amp;iSin, sizeof(int), 1, filePtr);
+            retName = fwrite((void*)cNameArray, sizeof(char) * MAX_NAME_SIZE, 1, filePtr);
+
+            if (retSin == 0 || retName == 0)
+            {
+                if ((iErr = ferror(filePtr)) != 0)
+                {
+                    printf("Error writing file %s: %s\n", cFileName, strerror(iErr));
+                }
+                else
+                {
+                    printf("Could not write data\n");
+                }
+            }
+        }
+
+        fclose(filePtr);
+    }
+    else
+    {
+        iErr = errno;
+        printf("Error accessing the file %s: %s\n", cFileName, strerror(iErr));
+    }
+
+    return iErr;
+}</code></pre>
+<p><strong>Read + search function (uses fseek to skip names when SIN doesn’t match)</strong></p>
+<pre class="line-numbers d2l-code"><code class="language-c">int exerciseBinaryRead(const char* cFileName, const char* cFileMode, int iSeek)
+{
+    FILE* filePtr = NULL;
+    int iErr = 0;
+
+    int iSin;
+    char cNameArray[MAX_NAME_SIZE];
+    unsigned short sNumRecords = 0;
+    int found = 0;
+
+    if ((filePtr = fopen(cFileName, cFileMode)) != NULL)
+    {
+        fread((void*)&amp;sNumRecords, sizeof(unsigned short), 1, filePtr);
+
+        for (int i = 0; i &lt; sNumRecords; i++)
+        {
+            fread((void*)&amp;iSin, sizeof(int), 1, filePtr);
+
+            if (iSin == iSeek)
+            {
+                found = (int)fread((void*)cNameArray, sizeof(char) * MAX_NAME_SIZE, 1, filePtr);
+                printf("SIN %d has name %s\n", iSin, cNameArray);
+            }
+            else
+            {
+                // Skip over the name field for this record
+                fseek(filePtr, MAX_NAME_SIZE, SEEK_CUR);
+            }
+        }
+
+        if (!found)
+        {
+            printf("SIN # not found\n");
+        }
+
+        fclose(filePtr);
+    }
+    else
+    {
+        printf("Could not open file\n");
+    }
+
+    return iErr;
+}</code></pre>
+<p><strong>Test functions (example)</strong></p>
+<pre class="line-numbers d2l-code"><code class="language-c">void testExerciseWrite(void)
+{
+    int iErr = exerciseBinaryWrite("exercise.dat", "wb");
+    printf("The error number returned was %d\n", iErr);
+}
+
+void testExerciseRead(void)
+{
+    int iSin = 0;
+
+    printf("Enter the SIN# of the person to find: ");
+    scanf("%d", &amp;iSin);
+
+    int iErr = exerciseBinaryRead("exercise.dat", "rb", iSin);
+    printf("The error number returned was %d\n", iErr);
+}</code></pre>
+<p>File size check (with MAX_NAME_SIZE=20 and NUM_RECORDS=3):<br><code>2 + 3 * (4 + 20) = 74 bytes</code>.</p>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>errno.h (Wikipedia): https://en.wikipedia.org/wiki/Errno.h</p>
+<p>strerror (cppreference): https://en.cppreference.com/w/c/string/byte/strerror</p>
+<p>fopen / fclose / FILE (cppreference): https://en.cppreference.com/w/c/io/fopen</p>
+<p>fread / fwrite (cppreference): https://en.cppreference.com/w/c/io/fread</p>
+<p>fscanf / fprintf (cppreference): https://en.cppreference.com/w/c/io/fscanf</p>
+<p>fgets / fputs (cppreference): https://en.cppreference.com/w/c/io/fgets</p>
+<p>fseek (cppreference): https://en.cppreference.com/w/c/io/fseek</p>
+</div></body></html>

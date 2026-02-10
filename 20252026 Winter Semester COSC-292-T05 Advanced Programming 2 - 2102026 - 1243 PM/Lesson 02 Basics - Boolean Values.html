@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css"><link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css"><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script><script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script><link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css"><script src="/shared/sp-template/scripts/snippets/accordion.js"></script><script>$(document).ready(function(){ $("h1:first").addClass("sr-only"); });</script><title>Lesson 02 Basics - Boolean Values</title></head><body><h1>Lesson 02 Basics - Boolean Values</h1>
+<div class="row">
+<div class="col-sm-12">
+<h2 class="h2">Boolean Values</h2>
+<p class="lead">Quick highlights:</p>
+<ul class="list">
+<li>Legacy: 0=false, non-zero=true</li>
+<li>Use <code>&lt;stdbool.h&gt;</code>: <code>bool</code>, <code>true</code>, <code>false</code></li>
+</ul>
+<hr>
+<h3 class="h3">Details</h3>
+<p>C originally had no Boolean data type. Boolean comparisons were done with any value (including char and float and double) where 0 was false and any non-zero value was true. Such comparisons can still be used.</p>
+<p>In C99, a _Bool type was introduced. This type still stores integers, but only 0 and 1. Assigning any non-zero value to a _Bool type is allowed, but it will be stored/displayed as 1.</p>
+<p>There is also a system header file called &lt;stdbool.h&gt; which contains a #define directive that redefine bool as _Bool (so you can use bool as a data type if you include this header – it will be the same as _Bool). It also contains #define directives to redefine true as 1 and false as 0, so you can use true or false in place of 1 and 0 (but the values are still the integers 1 and 0 in the underlying code).</p>
+<p>If you want to see what stdbool.h looks like (or any other system header file), go to C:\Program Files\Microsoft Visual Studio\2022 and search for the filename. For instance, on my system, stdbool.h is at C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.34.31933\include and contains the following code:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">//
+// stdbool.h
+//
+// Copyright (c) Microsoft Corporation. All rights reserved.
+//
+// The C Standard Library &lt;stdbool.h&gt; header.
+//
+
+#ifndef _STDBOOL
+
+#define _STDBOOL
+
+#define __bool_true_false_are_defined 1
+
+#ifndef __cplusplus
+
+#define bool _Bool
+
+#define false 0
+
+#define true 1
+
+#endif /* __cplusplus */
+
+#endif /* _STDBOOL */</code></pre>
+<p></p>
+<p>Note that all stdbool.h is doing is redefining bool, true, and false so that they will be replaced with their corresponding values when the pre-processor finds them in the code. (We will learn more about the structure of header files later.)</p>
+<p>Let’s try out Boolean values, both as integers and using the _Bool type. First, go to the top of the file and add the include directive for stdbool.h:</p>
+<br>
+<pre><code class="language-c">#include &lt;stdbool.h&gt;</code></pre>
+<p>Then try adding the following code in main:</p>
+<p>booleanDemo();</p>
+<p>Then above main, add the following booleanDemo function:</p>
+<br>
+<pre><code class="language-c">void booleanDemo()
+{</code></pre>
+<p>int myValue = 3;</p>
+<p>// boolean values are integers - 0 for false, 1 for true</p>
+<br>
+<pre><code class="language-c">	printf("False comparison prints as: %d\n", (myValue &gt; 3));
+	printf("True comparison prints as: %d\n", (myValue &lt;= 3));</code></pre>
+<p>if (myValue) // any non-zero integer is true</p>
+<br>
+<pre><code class="language-c">	{
+		printf("3 is non-zero, so it is considered true\n");
+	}</code></pre>
+<p>// In C99 and up, there is a Boolean type called _Bool.</p>
+<p>// It still stores integer values (either 0 or 1).</p>
+<p>_Bool myBool = 3; // any non-zero integer is still true, prints as 1</p>
+<br>
+<pre><code class="language-c">	printf("Boolean myBool: %d\n", myBool);</code></pre>
+<p>// We can use the &lt;stdbool.h&gt; header file to define</p>
+<p>// bool (which is just _Bool redefined),</p>
+<p>// true (which is really 1), and false (which is really 0)</p>
+<p>bool myRedefinedBool = false;</p>
+<br>
+<pre><code class="language-c">	printf("Boolean myRedefinedBool: %d\n", myRedefinedBool);
+}</code></pre>
+</div>
+</div></body></html>

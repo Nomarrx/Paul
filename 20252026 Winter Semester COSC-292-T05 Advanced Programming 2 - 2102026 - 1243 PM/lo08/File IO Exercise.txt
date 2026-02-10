@@ -1,0 +1,24 @@
+// In class exercise
+/*
+Write a function that will write out 3 records worth of information entered by the user.
+Each record consists of:
+	SIN# (integer)
+	Name (char array of MAX_NAME_SIZE)
+This information is entered in using scanf (remember to get the \n off the buffer after scanf)
+and fgets from stdin (so a space can be included in the name).
+
+After entering a record, write the data out to a binary file.
+Repeat until 3 records have been written out.
+Do some error checking after each write.
+Close the file.
+
+Write code in a separate function to read in from the file and display the information
+contained within. Note that you will need to either write the number of records as the first
+integer in the file, or check for end of file after each record using the feof function.
+
+If you get that done, modify your read code to get user input of an integer and determine
+whether that record exists in the file and what its associated name is. (You may want to use
+fseek to skip over names that are not associated with that integer.)
+*/
+
+See the FileIO project under GroupA or GroupB for a solution to the exercise
