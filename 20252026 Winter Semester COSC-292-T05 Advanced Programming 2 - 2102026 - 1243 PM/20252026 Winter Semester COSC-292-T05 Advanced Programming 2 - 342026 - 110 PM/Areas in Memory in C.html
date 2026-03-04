@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+<title>Lesson — Areas in Memory</title>
+</head><body><h1>Lesson — Areas in Memory in C</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Understand and manipulate memory areas in C.</p>
+<p><strong>Assessment alignment:</strong> Midterm 1 (Memory concepts).</p>
+</div>
+</div>
+<h2>Areas in Memory in C</h2>
+<p>C programs use several distinct memory areas:</p>
+<h3>Text Area</h3>
+<p>The <strong>text area</strong> stores program code, string literals, and global constants. These locations are read-only; attempting to modify them will crash your program in Visual Studio. For example, the address of the <code>memoryMap</code> function is far from local variables because it resides in the text area.</p>
+<h3>Four Main RAM Areas for Variables</h3>
+<ol>
+<li><strong>Data Area:</strong> Global variables initialized to a value other than 0.</li>
+<li><strong>BSS Segment:</strong> Global variables not initialized (defaults to 0).</li>
+<li><strong>Heap:</strong> Dynamically allocated variables at runtime (e.g., via <code>malloc</code> in C, or <code>new</code> in C#/Java).</li>
+<li><strong>Stack:</strong> Variables and parameters declared within functions (stack frame).</li>
+</ol>
+<p>Why two areas for globals? Before <code>main()</code> runs, the C runtime sets all bytes in the BSS segment to zero (fast bulk initialization). For the data area, it sets each variable to its initial value individually.</p>
+<p></p>
+<h3>Example Program</h3>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int globalVar;
+double pi = 3.14159;
+
+int main()
+{
+    char c;
+}
+</code></pre>
+<h4>Review: Where are these stored?</h4>
+<ul>
+<li><strong>globalVar</strong> — BSS segment (global, not initialized → defaults to 0)</li>
+<li><strong>pi</strong> — Data area (global, initialized to non-zero)</li>
+<li><strong>c</strong> — Stack (local variable in a function)</li>
+</ul>
+<p></p>
+<h3>Static variables</h3>
+<p>There is a special kind of variable called a static variable, but this is different from global variables defined with the <b>static</b> keyword. A static variable is defined in a function, is only known within that function, but exists for the lifetime of the program. Rather than being allocated on the stack, memory for static variables is allocated either in the BSS segment or the data area (same as global variables). They work just like global variables, but their scope is limited to the function that they are declared in.</p>
+<p>It is good programming practice to limit the scope of variables; when you use them, static variables are better to use than global variables.</p>
+<h3>Further Reading</h3>
+<p>See <a href="https://codingfreak.blogspot.com/2012/03/memory-layout-of-c-program-part-1.html" target="_blank" rel="noopener">Memory Layout of a C Program</a> for a detailed explanation.</p>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>Wikipedia contributors. C memory layout. Retrieved from https://en.wikipedia.org/wiki/C_(programming_language)</p>
+<p>Coding Freak Blog. Memory layout of C program. Retrieved from https://codingfreak.blogspot.com/2012/03/memory-layout-of-c-program-part-1.html</p>
+</div></body></html>

@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/SP-Global-2015.css"><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/SP-bootstrap-grid.css"><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script><script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/jquery-ui.min.css"><script src="https://online.saskpolytech.ca/shared/sp-template/scripts/snippets/accordion.js"></script><script>$(document).ready(function(){ $("h1:first").addClass("sr-only"); });</script><title>Lesson 02 Basics - Primitive Types</title></head><body><h1>Lesson 02 Basics - Primitive Types</h1><div class="row"><div class="col-sm-12"><h2 class="h2">Primitive Types</h2><p class="lead">Quick highlights:</p><ul class="list"><li><code>char</code>, <code>int</code>, <code>float</code>, <code>double</code></li><li>Use <code>sizeof</code> to confirm sizes</li></ul><hr><h3 class="h3">Details</h3>
+<p>C provides four primitive types: char, int, float, double.</p>
+<br><pre><code class="language-c">char is used for small integer values. It is required to be at least 8 bits or 1 byte in length (but could be more on some systems – on our systems, it is 8 bits or 1 byte). Note that char variables can contain numbers or characters. When used as a character, it can store ASCII codes (8-bit) but not Unicode values that exceed its size.</code></pre>
+<p>int is used for larger integer values. It is required to be at least 16 bits or 2 bytes in length (but could be more on some systems – on our systems, it is 32 bits or 4 bytes).</p>
+<p>float is used for single-precision floating-point values.</p>
+<p>double is used for double-precision floating-point values.</p>
+<p>Let’s try writing a program in a new project in a source file named something like program.c to illustrate these types. Start with some include directives and one define directive:</p>
+<br><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;</code></pre>
+<p>#define PI 3.141519f // f at the end of the literal denotes it as a float literal</p>
+<p>Then create the main function. Note that we will use the printf function, which is included in &lt;stdio.h&gt;, for output. printf is similar to the Java method System.out.printf() – in fact, the Java method was based on the C function. printf displays a message to the standard output stream, which by default is the console.</p>
+<p>For more information about any C function and in particular its Visual Studio implementation, google the function name and Microsoft. For instance, searching for printf microsoft will allow you to find https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/printf-printf-l-wprintf-wprintf-l?view=msvc-170</p>
+<p>The main function will look like this:</p>
+<p>// Program starts with the main function</p>
+<br><pre><code class="language-c">int main(int argc, char* argv[])
+{</code></pre>
+<p>	// Use printf to output to the console</p>
+<br><pre><code class="language-c">	printf(&quot;Hello&quot;); // does not automatically move to a new line
+	printf(&quot; world\n\n&quot;); // \n specifies a newline</code></pre>
+<p>	primitiveTypes();</p>
+<p>	return EXIT_SUCCESS; // defined in stdlib.h</p>
+<br><pre><code class="language-c">}</code></pre>
+<p>Note the call to the primitiveTypes function – before we run this program, we need to create it. The C compiler needs to know what primitiveTypes looks like before it calls it in main, so put it above the main function; otherwise, you will get an error that primitiveTypes has been redefined (in other words, the call in main assumes that primitiveTypes is different from how the function is coded). So above main, write:</p>
+<br><pre><code class="language-c">void primitiveTypes()
+{
+	char myCharacter = &#x27;A&#x27;; // character literals are in single quotes</code></pre>
+<p>	int myValue = 4276803;</p>
+<p>	float myDigits = PI; // using PI from the #define above</p>
+<p>	double myLongerDigits = 12345.6579;</p>
+<p>	// Print the value of the variables using format specifiers that start with %</p>
+<br><pre><code class="language-c">	printf(&quot;The value of c is %c\n&quot;, myCharacter);
+	printf(&quot;The value of c as an int is %d\n&quot;, myCharacter);
+	printf(&quot;The value of x is %d\n&quot;, myValue);
+	printf(&quot;The value of x as a character is %c\n&quot;, myValue);
+	printf(&quot;The value of x in hex is %x\n&quot;, myValue);</code></pre>
+<p>	// Can use the format specifier to modify output</p>
+<p>	// For instance, to display 10 characters with 2 decimals</p>
+<br><pre><code class="language-c">	printf(&quot;The value of d is %10.2f\n&quot;, myLongerDigits);
+}</code></pre>
+<p>Note that character literals are expressed in single quotes like &#x27;A&#x27;, so we can assign that to a char. We then use printf to print the values in different formats. We can print the char variable as a character using the %c format specifier or as a number using %d. We can also print the int value as a number, as a character (using only the low-order 8 bits), or in hexadecimal using %x. We can print the double in various fashions, including modifying the number of digits it prints (try printing it without the 10.2 in the format specifier to see the difference). More about printf format specifiers in Visual Studio can be found at https://learn.microsoft.com/en-us/cpp/c-runtime-library/format-specification-syntax-printf-and-wprintf-functions?view=msvc-170</p>
+<p>How big are these primitive types and thus what sizes of values can they store? In C, there are certain guarantees – for instance, a char must be at least 8 bits (1 byte), and an int must be at least 16 bits (2 bytes). But the exact sizes depend on the environment and operating system used. There is an operator called sizeof in C that will tell you the size of a variable or data type on the system you are using – see https://learn.microsoft.com/en-us/cpp/c-language/sizeof-operator-c?view=msvc-170. So let’s add the following code to primitiveTypes – note the use of the format specifier %zu for the results of sizeof:</p>
+<p>	// What are the sizes of each data type on our system? (may vary with system)</p>
+<p>	// The sizeof operator gives the size of a data type, struct, array, etc.</p>
+<p>	// Measured in bytes</p>
+<br><pre><code class="language-c">	printf(&quot;The size of a char is %zu\n&quot;, sizeof myCharacter);
+	printf(&quot;The size of an int is %zu\n&quot;, sizeof myValue);
+	printf(&quot;The size of a float is %zu\n&quot;, sizeof (float));
+	printf(&quot;The size of a double is %zu\n&quot;, sizeof (double));</code></pre>
+<p>You will find that on our systems that char is 1 byte (8 bits) in size; int (which is only guaranteed to be 16 bits or 2 bytes) is 4 bytes in size; float is 4 bytes; and double is 8 bytes.</p>
+</div></div></body></html>
