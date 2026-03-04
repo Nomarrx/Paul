@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/SP-Global-2015.css"><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/SP-bootstrap-grid.css"><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script><script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/jquery-ui.min.css"><script src="https://online.saskpolytech.ca/shared/sp-template/scripts/snippets/accordion.js"></script><script>$(document).ready(function(){ $("h1:first").addClass("sr-only"); });</script><title>Lesson 02 Basics - Pointer Math</title></head><body><h1>Lesson 02 Basics - Pointer Math</h1><div class="row"><div class="col-sm-12"><h2 class="h2">Pointer Math</h2><p class="lead">Quick highlights:</p><ul class="list"><li>Advances by <code>sizeof(type)</code></li><li>Does not change pointer unless assigned</li></ul><hr><h3 class="h3">Details</h3>
+<p>You can also add values to pointers. Adding a value to a pointer changes the address by the size of the pointer’s data type! So for instance, cPtr++ would add 1 to the address in cPtr because the char data type is 1 byte in size. But iPtr++ would add 4 to the address in iPtr on our systems because the int data type is 4 bytes on our system! Try it out with the following code in pointerDemo:</p>
+<p>	iPtr = (int*)cPtr; // assign the address in cPtr to iPtr, treated as int*</p>
+<br><pre><code class="language-c">	printf(&quot;cArray is: \t%p\n&quot;, cArray);
+	printf(&quot;cPtr + 2 is: \t%p\n&quot;, cPtr + 2);
+	printf(&quot;iPtr + 2 is: \t%p\n&quot;, iPtr + 2);</code></pre>
+<p>You will see that cPtr + 2 is two more than cArray (remember to do the addition in hexadecimal!) while iPtr + 2 is eight more than cArray.</p>
+<p>Note that unlike cPtr++, cPtr + 2 does not change cPtr – you would need to assign the new value to cPtr as well using cPtr = cPtr + 2; or cPtr += 2; (the same as with any other variable).</p>
+<p>Application: counting the length of a string</p>
+<p>Recall that in C, strings are just null-terminated arrays of characters. They do not have a length property. If we want to find out the length of a string, we can count the number of characters until we reach the null terminator. Recall also that the null terminator is the value 0 (or &#x27;\0&#x27; as a character), and that zero is treated as false in C while any non-zero value is treated as true.</p>
+<p>So a simple approach to counting the length of a string is to go through each character, counting as we go along, while we haven’t reached the null terminator. Why would we need this when we have the sizeof operator? The sizeof operator works on arrays declared in the same function, but arrays are passed to other functions by passing only the address of the array, so sizeof will not work in those cases (it would find the size of the address or in other words, the size of a pointer). For our simple application here, we will use arrays in the same function. Add the following code to main:</p>
+<p>	countLengthDemo();</p>
+<p>Then above main, add the following countLengthDemo function:</p>
+<br><pre><code class="language-c">void countLengthDemo()
+{
+	char cArray[] = &quot;This is a char array with a null terminator&quot;;</code></pre>
+<p>	char* cPtr = cArray; // a pointer to a char, set to the address of cArray</p>
+<p>	int iLength;</p>
+<br><pre><code class="language-c">	printf(&quot;The size of cArray is \t%zu\n&quot;, sizeof cArray);
+	printf(&quot;The size of cPtr is \t%zu\n&quot;, sizeof cPtr);
+}</code></pre>
+<p>Note that the size of cArray is 44 (43 characters plus the null terminator), but the size of the pointer to cArray is only 4 or 8 bytes (depending on your solution platform).</p>
+<p>Let’s try counting the characters by using a while loop:</p>
+<p>	iLength = 0;</p>
+<p>	while (cArray[iLength] != &#x27;\0&#x27;)</p>
+<br><pre><code class="language-c">	{</code></pre>
+<p>		iLength++;</p>
+<br><pre><code class="language-c">	}
+	printf(&quot;The length of the string is \t%d\n&quot;, iLength);</code></pre>
+<p>Note that the length calculated here is 43, since it does not include the null terminator (so it is the length we would expect in Java or C#).</p>
+<p>As we pointed out, the null terminator is 0, and 0 is false in C. So we could shorten our loop to:</p>
+<p>	while (cArray[iLength])</p>
+<br><pre><code class="language-c">	{</code></pre>
+<p>		iLength++;</p>
+<br><pre><code class="language-c">	}</code></pre>
+<p>Instead of using the array and array notation, we could “walk” the pointer through the string. Add the following code:</p>
+<p>	for (iLength = 0; *cPtr; iLength++) // Recall *cPtr gives us the character</p>
+<br><pre><code class="language-c">	{</code></pre>
+<p>		cPtr++; // Walk the pointer to the next character</p>
+<br><pre><code class="language-c">	}
+	printf(&quot;Walking the string gives \t%d\n&quot;, iLength);</code></pre>
+<p>Because the ++ operator has precedence over the * indirection operator (we will look at operator precedence in more detail later), we could even shorten the loop to the following code:</p>
+<p>	for (iLength = 0; *cPtr++; iLength++); // semicolon at end for no loop body</p>
+<p>That’s somewhat confusing, so let’s go back to the previous version and add a bit of code to show what is happening:</p>
+<p>	for (iLength = 0; *cPtr; iLength++)</p>
+<br><pre><code class="language-c">	{
+		printf(&quot;The current value pointed to by cPtr is &#x27;%c&#x27;\n&quot;, *cPtr);
+		printf(&quot;The value of cPtr is \t%p\n&quot;, cPtr);</code></pre>
+<p>		cPtr++; // makes cPtr point to the next char</p>
+<p>				// (in other words, add 1 to the address in cPtr)</p>
+<br><pre><code class="language-c">	}</code></pre>
+<p>We will see later that the &lt;string.h&gt; library provides a function called strlen that calculates the string length.</p>
+</div></div></body></html>
