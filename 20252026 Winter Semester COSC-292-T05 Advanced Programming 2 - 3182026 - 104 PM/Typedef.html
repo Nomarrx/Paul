@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+ <title>Lesson — Typedefs in C</title>
+</head><body><h1>Lesson — Typedefs in C</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Develop code using custom type names and type abstractions.</p>
+<p><strong>Assessment alignment:</strong> Midterm 1 (Typedefs &amp; type rewriting).</p>
+</div>
+</div>
+<h2>What is <code>typedef</code>?</h2>
+<p><code>typedef</code> allows you to create an additional name (“alias” or “synonym”) for an existing C type. Unlike <code>#define</code>, it is handled by the <strong>compiler</strong>, not the preprocessor.</p>
+<h3>Syntax</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">typedef ExistingType NewType;</code></pre>
+<p><strong>Important:</strong> <code>typedef</code> does NOT create a new type. It creates a new name for the same type.</p>
+<h2>Why use typedef?</h2>
+<ol>
+<li><strong>Portability</strong> — Machine‑dependent types (like sizes of ints, longs, pointers) can vary across systems. Using typedefs means only one typedef block needs updating when porting code.</li>
+<li><strong>Documentation</strong> — A typedef name can explain a concept better than a raw type, e.g. <code>TreePtr</code> vs. <code>struct treeNode*</code>.</li>
+</ol>
+<h2>Example: built‑in typedef <code>size_t</code></h2>
+<p><code>size_t</code> is defined differently on 32‑bit vs. 64‑bit platforms.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void)
+{
+    int iArray[] = { 45, 56, 626262, 30, 2 };
+    size_t iSize = sizeof(iArray) / sizeof(int);
+
+    printf("Size of iSize: %zu\n", sizeof(iSize));
+    return EXIT_SUCCESS;
+}</code></pre>
+<p>On x64 → <code>sizeof(size_t)</code> = 8 bytes On x86 → <code>sizeof(size_t)</code> = 4 bytes</p>
+<hr>
+<h2>Common typedef examples</h2>
+<h3>Example 1 — simple aliases</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">typedef int Length;
+
+Length len1 = 5;
+Length len2 = 10;
+printf("%d\n", len1 + len2); // same as int</code></pre>
+<h3>Example 2 — floating-point clarity</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">typedef float REAL;
+
+REAL a = 3.14f;
+REAL b = 2.5f;</code></pre>
+<h3>Example 3 — strings</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">typedef char* String;
+
+String p = "Hello world";
+printf("%s\n", p);
+printf("%c\n", *p);</code></pre>
+<h3>Example 4 — unsigned types</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">typedef unsigned short UShort;
+
+UShort s = 60000;
+printf("%hu\n", s);</code></pre>
+<h3>Example 5 — typedef with enum</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">typedef enum Boolean { False, True } BOOL;
+
+BOOL done = False;</code></pre>
+<hr>
+<h2>Where to put typedefs?</h2>
+<p>Usually in header files, so multiple source files can use the new name.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">#ifndef FUNCS_H
+#define FUNCS_H
+
+typedef int Length;
+typedef char* String;
+typedef unsigned short UShort;
+
+#endif</code></pre>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>C typedef (cppreference): https://en.cppreference.com/w/c/language/typedef</p>
+<p>K&amp;R C Programming (typedef): classic reference</p>
+</div></body></html>

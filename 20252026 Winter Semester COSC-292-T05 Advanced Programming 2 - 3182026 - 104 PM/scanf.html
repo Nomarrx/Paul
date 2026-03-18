@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html><head><link rel="stylesheet" href="https://templates.lcs.brightspace.com/lib/assets/css/styles.min.css"><link rel="stylesheet" href="/shared/sp-template/styles/SP-bootstrap-grid.css" data-override="override"></head><body style="color: rgb(32, 33, 34); font-family: verdana, sans-serif; font-size: 12px;"><p></p>
+<h1>scanf</h1>
+<div class="C_prototype">
+<pre>int scanf ( const char * format, ... );</pre>
+</div>
+<div id="I_description">Read formatted data from stdin</div>
+<section id="description">Reads data from stdin and stores them according to the parameter <i>format</i> into the locations pointed by the additional arguments.<br><br>The additional arguments should point to already allocated objects of the type specified by their corresponding format specifier within the <i>format</i> string.</section>
+<p></p>
+<section id="parameters">
+<h3>Parameters</h3>
+<dl>
+<dt>format</dt>
+<dd>C string that contains a sequence of characters that control how characters extracted from the stream are treated:<br>
+<ul>
+<li><b>Whitespace character:</b> the function will read and ignore any whitespace characters encountered before the next non-whitespace character (whitespace characters include spaces, newline and tab characters -- see isspace). A single whitespace in the <i>format</i> string validates any quantity of whitespace characters extracted from the <i>stream</i> (including none).</li>
+<li><b>Non-whitespace character, except format specifier (%):</b> Any character that is not either a whitespace character (blank, newline or tab) or part of a <i>format specifier</i> (which begin with a <tt>%</tt> character) causes the function to read the next character from the stream, compare it to this non-whitespace character and if it matches, it is discarded and the function continues with the next character of <i>format</i>. If the character does not match, the function fails, returning and leaving subsequent characters of the stream unread.</li>
+<li><b>Format specifiers:</b> A sequence formed by an initial percentage sign (<tt>%</tt>) indicates a format specifier, which is used to specify the type and format of the data to be retrieved from the <i>stream</i> and stored into the locations pointed by the additional arguments.</li>
+</ul>
+<br>A <i>format specifier</i> for <tt>scanf</tt> follows this prototype:<br><br><tt>%[*][width][length]specifier</tt> <br><br>Where the <i>specifier</i> character at the end is the most significant component, since it defines which characters are extracted, their interpretation and the type of its corresponding argument:<br>
+<table class="boxed" style="width: 100%; height: 1523.53px; border-collapse: collapse; border-width: 0.1px;" border="1">
+<tbody>
+<tr style="height: 44.7px;">
+<th style="width: 16.2578%; border-width: 0.1px;"><i>specifier</i></th>
+<th style="width: 17.2854%; border-width: 0.1px;">Description</th>
+<th style="width: 66.3462%; border-width: 0.1px;">Characters extracted</th>
+</tr>
+<tr style="height: 164.7px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>i</tt></td>
+<td style="width: 17.2854%; border-width: 0.1px;">Integer</td>
+<td style="width: 66.3462%; border-width: 0.1px;">Any number of digits, optionally preceded by a sign (<tt>+</tt> or <tt>-</tt>).<br>Decimal digits assumed by default (<tt>0-9</tt>), but a <tt>0</tt> prefix introduces octal digits (<tt>0-7</tt>), and <tt>0x</tt> hexadecimal digits (<tt>0-f</tt>).<br><i>Signed</i> argument.</td>
+</tr>
+<tr style="height: 106.2px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>d</tt> <i>or</i> <tt>u</tt></td>
+<td style="width: 17.2854%; border-width: 0.1px;">Decimal integer</td>
+<td style="width: 66.3462%; border-width: 0.1px;">Any number of decimal digits (<tt>0-9</tt>), optionally preceded by a sign (<tt>+</tt> or <tt>-</tt>).<br><tt>d</tt> is for a <i>signed</i> argument, and <tt>u</tt> for an <i>unsigned</i>.</td>
+</tr>
+<tr style="height: 104.7px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>o</tt></td>
+<td style="width: 17.2854%; border-width: 0.1px;">Octal integer</td>
+<td style="width: 66.3462%; border-width: 0.1px;">Any number of octal digits (<tt>0-7</tt>), optionally preceded by a sign (<tt>+</tt> or <tt>-</tt>).<br><i>Unsigned</i> argument.</td>
+</tr>
+<tr style="height: 134.7px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>x</tt></td>
+<td style="width: 17.2854%; border-width: 0.1px;">Hexadecimal integer</td>
+<td style="width: 66.3462%; border-width: 0.1px;">Any number of hexadecimal digits (<tt>0-9</tt>, <tt>a-f</tt>, <tt>A-F</tt>), optionally preceded by <tt>0x</tt> or <tt>0X</tt>, and all optionally preceded by a sign (<tt>+</tt> or <tt>-</tt>).<br><i>Unsigned</i> argument.</td>
+</tr>
+<tr style="height: 110.317px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>f</tt>, <tt>e</tt>, <tt>g</tt></td>
+<td rowspan="2" style="width: 17.2854%; border-width: 0.1px;">Floating point number</td>
+<td rowspan="2" style="width: 66.3462%; border-width: 0.1px;">A series of decimal digits, optionally containing a decimal point, optionally preceeded by a sign (<tt>+</tt> or <tt>-</tt>) and optionally followed by the <tt>e</tt> or <tt>E</tt> character and a decimal integer (or some of the other sequences supported by <samp>strtod</samp>).<br>Implementations complying with C99 also support hexadecimal floating-point format when preceded by <code>0x</code> or <code>0X</code>.</td>
+</tr>
+<tr class="cpp11" style="height: 110.317px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>a</tt></td>
+</tr>
+<tr style="height: 131.7px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>c</tt></td>
+<td style="width: 17.2854%; border-width: 0.1px;">Character</td>
+<td style="width: 66.3462%; border-width: 0.1px;">The next character. If a <i>width</i> other than <tt>1</tt> is specified, the function reads exactly <i>width</i> characters and stores them in the successive locations of the array passed as argument. No null character is appended at the end.</td>
+</tr>
+<tr style="height: 130.2px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>s</tt></td>
+<td style="width: 17.2854%; border-width: 0.1px;">String of characters</td>
+<td style="width: 66.3462%; border-width: 0.1px;">Any number of non-whitespace characters, stopping at the first whitespace character found. A terminating null character is automatically added at the end of the stored sequence.</td>
+</tr>
+<tr style="height: 131.7px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>p</tt></td>
+<td style="width: 17.2854%; border-width: 0.1px;">Pointer address</td>
+<td style="width: 66.3462%; border-width: 0.1px;">A sequence of characters representing a pointer. The particular format used depends on the system and library implementation, but it is the same as the one used to format <tt>%p</tt> in fprintf.</td>
+</tr>
+<tr style="height: 131.7px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>[</tt><i>characters</i><tt>]</tt></td>
+<td style="width: 17.2854%; border-width: 0.1px;">Scanset</td>
+<td style="width: 66.3462%; border-width: 0.1px;">Any number of the characters specified between the brackets.<br>A dash (<tt>-</tt>) that is not the first character may produce non-portable behavior in some library implementations.</td>
+</tr>
+<tr style="height: 73.2px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>[^</tt><i>characters</i><tt>]</tt></td>
+<td style="width: 17.2854%; border-width: 0.1px;">Negated scanset</td>
+<td style="width: 66.3462%; border-width: 0.1px;">Any number of characters none of them specified as <i>characters</i> between the brackets.</td>
+</tr>
+<tr style="height: 103.2px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>n</tt></td>
+<td style="width: 17.2854%; border-width: 0.1px;">Count</td>
+<td style="width: 66.3462%; border-width: 0.1px;">No input is consumed.<br>The number of characters read so far from <samp>stdin</samp> is stored in the pointed location.</td>
+</tr>
+<tr style="height: 46.2px;">
+<td style="width: 16.2578%; border-width: 0.1px;"><tt>%</tt></td>
+<td style="width: 17.2854%; border-width: 0.1px;"><tt>%</tt></td>
+<td style="width: 66.3462%; border-width: 0.1px;">A <tt>%</tt> followed by another <tt>%</tt> matches a single <tt>%</tt>.</td>
+</tr>
+</tbody>
+</table>
+Except for <tt>n</tt>, at least one character shall be consumed by any specifier. Otherwise the match fails, and the scan ends there.<br><br>The <i>format specifier</i> can also contain sub-specifiers: <i>asterisk</i> (<tt>*</tt>), <i>width</i> and <i>length</i> (in that order), which are optional and follow these specifications:<br>
+<table class="boxed" style="border-collapse: collapse; border-width: 0.1px;" border="1">
+<tbody>
+<tr>
+<th style="border-width: 0.1px;"><i>sub-specifier</i></th>
+<th style="border-width: 0.1px;">description</th>
+</tr>
+<tr>
+<td style="border-width: 0.1px;"><tt>*</tt></td>
+<td style="border-width: 0.1px;">An optional starting asterisk indicates that the data is to be read from the stream but ignored (i.e. it is not stored in the location pointed by an argument).</td>
+</tr>
+<tr>
+<td style="border-width: 0.1px;"><i>width</i></td>
+<td style="border-width: 0.1px;">Specifies the maximum number of characters to be read in the current reading operation (optional).</td>
+</tr>
+<tr>
+<td style="border-width: 0.1px;"><i>length</i></td>
+<td style="border-width: 0.1px;">One of <tt>hh</tt>, <tt>h</tt>, <tt>l</tt>, <tt>ll</tt>, <tt>j</tt>, <tt>z</tt>, <tt>t</tt>, <tt>L</tt> (optional).<br>This alters the expected type of the storage pointed by the corresponding argument (see below).</td>
+</tr>
+</tbody>
+</table>
+<br>This is a chart showing the types expected for the corresponding arguments where input is stored (both with and without a <i>length</i> sub-specifier):<br>
+<table class="boxed" style="border-collapse: collapse; border-width: 0.1px;" border="1">
+<tbody>
+<tr>
+<th style="border-width: 0.1px;"></th>
+<th colspan="7" style="border-width: 0.1px;">specifiers</th>
+</tr>
+<tr>
+<th style="border-width: 0.1px;"><i>length</i></th>
+<th style="border-width: 0.1px;"><tt>d i</tt></th>
+<th style="border-width: 0.1px;"><tt>u o x</tt></th>
+<th style="border-width: 0.1px;"><tt>f e g a</tt></th>
+<th style="border-width: 0.1px;"><tt>c s [] [^]</tt></th>
+<th style="border-width: 0.1px;"><tt>p</tt></th>
+<th style="border-width: 0.1px;"><tt>n</tt></th>
+</tr>
+<tr>
+<td style="border-width: 0.1px;"><i>(none)</i></td>
+<td class="yes" style="border-width: 0.1px;"><tt>int*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>unsigned int*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>float*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>char*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>void**</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>int*</tt></td>
+</tr>
+<tr class="cpp11">
+<td style="border-width: 0.1px;"><tt>hh</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>signed char*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>unsigned char*</tt></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="yes" style="border-width: 0.1px;"><tt>signed char*</tt></td>
+</tr>
+<tr>
+<td style="border-width: 0.1px;"><tt>h</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>short int*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>unsigned short int*</tt></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="yes" style="border-width: 0.1px;"><tt>short int*</tt></td>
+</tr>
+<tr>
+<td style="border-width: 0.1px;"><tt>l</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>long int*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>unsigned long int*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>double*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>wchar_t*</tt></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="yes" style="border-width: 0.1px;"><tt>long int*</tt></td>
+</tr>
+<tr class="cpp11">
+<td style="border-width: 0.1px;"><tt>ll</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>long long int*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>unsigned long long int*</tt></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="yes" style="border-width: 0.1px;"><tt>long long int*</tt></td>
+</tr>
+<tr class="cpp11">
+<td style="border-width: 0.1px;"><tt>j</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>intmax_t*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>uintmax_t*</tt></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="yes" style="border-width: 0.1px;"><tt>intmax_t*</tt></td>
+</tr>
+<tr class="cpp11">
+<td style="border-width: 0.1px;"><tt>z</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>size_t*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>size_t*</tt></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="yes" style="border-width: 0.1px;"><tt>size_t*</tt></td>
+</tr>
+<tr class="cpp11">
+<td style="border-width: 0.1px;"><tt>t</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>ptrdiff_t*</tt></td>
+<td class="yes" style="border-width: 0.1px;"><tt>ptrdiff_t*</tt></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="yes" style="border-width: 0.1px;"><tt>ptrdiff_t*</tt></td>
+</tr>
+<tr>
+<td style="border-width: 0.1px;"><tt>L</tt></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="yes" style="border-width: 0.1px;"><tt>long double*</tt></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+<td class="no" style="border-width: 0.1px;"></td>
+</tr>
+</tbody>
+</table>
+<b></b><i></i></dd>
+<dd>Depending on the <i>format</i> string, the function may expect a sequence of additional arguments, each containing a pointer to allocated storage where the interpretation of the extracted characters is stored with the appropriate type.<br>There should be at least as many of these arguments as the number of values stored by the <i>format specifiers</i>. Additional arguments are ignored by the function.<br>These arguments are expected to be pointers: to store the result of a <tt>scanf</tt> operation on a regular variable, its name should be preceded by the <i>reference operator</i> (<tt>&amp;</tt>).</dd>
+</dl>
+</section>
+<p></p>
+<section id="return">
+<h3>Return Value</h3>
+On success, the function returns the number of items of the argument list successfully filled. This count can match the expected number of items or be less (even zero) due to a matching failure, a reading error, or the reach of the <i>end-of-file</i>.<br><br>If a reading error happens or the <i>end-of-file</i> is reached while reading, the proper indicator is set (feof or ferror). And, if either happens before any data could be successfully read, EOF is returned.<br><br>If an encoding error happens interpreting wide characters, the function sets errno to <tt>EILSEQ</tt>.</section>
+<p></p>
+<section id="example">
+<h3>Example</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">/* scanf example */
+#include &lt;stdio.h&gt;
+
+int main ()
+{
+  char str [80];
+  int i;
+
+  printf ("Enter your family name: ");
+  scanf ("%79s",str);  
+  printf ("Enter your age: ");
+  scanf ("%d",&amp;amp;i);
+  printf ("Mr. %s , %d years old.\n",str,i);
+  printf ("Enter a hexadecimal number: ");
+  scanf ("%x",&amp;amp;i);
+  printf ("You have entered %#x (%d).\n",i,i);
+  
+  return 0;
+}&lt;/stdio.h&gt;</code></pre>
+<br>This example demonstrates some of the types that can be read with <tt>scanf</tt>:<br>
+<div class="auto">
+<table class="snippet">
+<tbody>
+<tr>
+<td class="output">
+<pre><samp>Enter your family name: Soulie
+Enter your age: 29
+Mr. Soulie , 29 years old.
+Enter a hexadecimal number: ff
+You have entered 0xff (255).
+</samp></pre>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section></body></html>

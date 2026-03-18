@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css"><link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css"><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script><script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script><link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css"><script src="/shared/sp-template/scripts/snippets/accordion.js"></script><script>$(document).ready(function(){ $("h1:first").addClass("sr-only"); });</script><title>Lesson 02 Basics - Header Files</title></head><body><h1>Lesson 03 Header Files</h1>
+<div class="row">
+<div class="col-sm-12">
+<h2 class="h2">Header Files</h2>
+<p class="lead">Quick highlights:</p>
+<ul class="list">
+<li>Declare prototypes, common macros</li>
+<li>Use <code>#pragma once</code> or include guards</li>
+</ul>
+<hr>
+<h3 class="h3">Details</h3>
+<p>So far, we have written all our code in one file. Often, we want to separate the code into multiple files – for instance, one file for the main function and other test functions, and one file as a library for related functions.</p>
+<p>In addition, so far, we have always added our functions above main. Why did we need to do that, and what could we do to add functions later?</p>
+<p>Let’s create a new project with a source file called program.c:</p>
+<br>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;</code></pre>
+<br>
+<pre><code class="language-c">int main(void)
+{
+	printf("Welcome to main!\n");</code></pre>
+<p>return EXIT_SUCCESS;</p>
+<br>
+<pre><code class="language-c">}</code></pre>
+<p>We will use void as the parameters for main since we are not using the command-line arguments anyway.</p>
+<p>Now try adding the following to main:</p>
+<p>demo();</p>
+<p>And add the following demo function below main:</p>
+<br>
+<pre><code class="language-c">void demo()
+{
+	printf("Welcome to demo!\n");
+}</code></pre>
+<p>Try compiling/running the program. You will that there are build errors. In particular, the warnings and errors will be listed as something similar to the following:</p>
+<p>What is happening? The compiler reads the code from top to bottom, so it looks at main first and sees the call to demo(). It hasn’t seen demo yet, so it assumes that it is a function that returns an int. Then the compiler looks at demo and sees that it is a void function. That creates a redefinition of demo, so the compiler doesn’t know which definition to use, which causes an error.</p>
+<p>One way to solve that is to create a function prototype before the function is created. A function prototype simply lists the return type and parameter types for a function so that the compiler knows how to call that function. So after the #include directives but before main, add a function prototype for demo as follows:</p>
+<br>
+<pre><code class="language-c">void demo();</code></pre>
+<p>Now you will see that the program compiles and runs successfully.</p>
+<p>What if we put code into a separate source file? Create another source file named pingpong.c with the following code:</p>
+<br>
+<pre><code class="language-c">#include &lt;stdio.h&gt;</code></pre>
+<br>
+<pre><code class="language-c">void ping()
+{
+	printf("Ping\n");
+}</code></pre>
+<p>And add the following line to the end of demo in program.c:</p>
+<p>ping();</p>
+<p>You will see that the program compiles and runs, but there is a warning that “'ping' is undefined; assuming extern returning int”. In some environments, that would cause the program not to link correctly (each file would compile successfully on its own but not link together to form the executable).</p>
+<p>Further, let’s try adding a pong function in pingpong.c, and call it from ping, and then call ping from pong. We’ll also add a static variable in pong to prevent the recursion from going on forever (a static variable is one that exists only once in memory and retains its value from call to call of the function). The code in pingpong.c should now look like:</p>
+<br>
+<pre><code class="language-c">#include &lt;stdio.h&gt;</code></pre>
+<br>
+<pre><code class="language-c">void ping()
+{
+	printf("Ping\n");</code></pre>
+<p>pong(); // pong() is not defined yet - assumed returning int</p>
+<br>
+<pre><code class="language-c">}</code></pre>
+<br>
+<pre><code class="language-c">void pong() // actual definition of pong() is here - void
+{</code></pre>
+<p>static int iCount = 0; // only 1 copy in memory, only accessible in function</p>
+<p>iCount++;</p>
+<br>
+<pre><code class="language-c">	printf("pong\n");</code></pre>
+<p>if (iCount &lt; 10)</p>
+<br>
+<pre><code class="language-c">	{</code></pre>
+<p>ping();</p>
+<br>
+<pre><code class="language-c">	}
+}</code></pre>
+<p>If you try compiling and running, you will see it doesn’t work because pong() is called in ping and then redefined afterwards. But if we reverse the order of the functions, it won’t work either, since ping() is called in pong and then redefined afterwards.</p>
+<p>To avoid the problems in program.c and in pingpong.c, we would need to create function prototypes for ping and pong, but then we might be adding the function prototypes in two places. To overcome these problems and create a single place where we create function prototypes (and often #define directives), we can create a header file and then add that to both source files.</p>
+<p>A header file is just a file that contains function prototypes, definitions, and sometimes other common information. We have already used header files built into the system like:</p>
+<p>&lt;stdio.h&gt;, which tells the compiler what common input/ouput (I/O) functions look like</p>
+<p>&lt;stdlib.h&gt;, which has some common definitions like EXIT_SUCCESS</p>
+<p>&lt;stdbool.h&gt;, which defines bool as a type and true and false as values</p>
+<p>As we have seen, system header files are contained within angle brackets &lt;&gt;.</p>
+<p>We can also create our own header files. These can be added to a source file using #include, but with the filename in quotation marks "". All that #include does is substitute those files into our current file, so it is like putting our prototypes at the top of the file. We can include the header file at the top of multiple source files, so we can add a header file to both program.c and pingpong.c in our example.</p>
+<p>To create a header file, right-click on Header Files in the Solution Explorer pane and choose Add &gt; New Item…. Choose a Header File (.h) from the list and add a filename with .h in the Name: field. For this example, let’s call our header file pingpong.h. You will see that Visual Studio creates the file with the default text #pragma once at the top. We will see what #pragma once means later, along with alternatives to #pragma once. For now, let’s add the function prototypes for the functions in pingpong.c to the header file as follows:</p>
+<p>#define MAX_PING_PONGS 10 // Maximum number of ping-pong calls</p>
+<p>// Must write function prototypes to indicate that these functions</p>
+<p>// are coded somewhere in the project</p>
+<br>
+<pre><code class="language-c">void ping();
+void pong(); // semicolons after function prototypes</code></pre>
+<p>Note: What if you clicked on Source Files instead of Header Files? Or selected C++ File (.cpp) instead of Header File (.h)? Don’t worry. If your filename has the .h extension, it will be treated as a header file. You may need to add #pragma once (or its alternatives), and you may want to drag the file to the Header Files section of the Solution Explorer.</p>
+<p>Now add the #include directive at the top of both program.c and pingpong.c as follows. Also change the line in pong that reads if (iCount &lt; 10) to if (iCount &lt; MAX_PING_PONGS).</p>
+<br>
+<pre><code class="language-c">#include "pingpong.h"</code></pre>
+<p>// include local files with "" so function prototypes are known ahead of use</p>
+<p>You should now see that the program compiles, links, and runs successfully with no warnings or errors.</p>
+<p>What of the #pragma once directive? In big projects, one header file may be included inside another header file. To prevent repeated code, #pragma once says that the header file should be included only once by the compiler. See https://en.wikipedia.org/wiki/Pragma_once for details. As that article notes (as of retrieval on January 31, 2023), “#pragma once is not necessarily available in all compilers and its implementation is tricky and might not always be reliable”. On Visual Studio 2022, you can be assured that it is implemented, so it is fine to use in this course. But we should also look at alternatives to “#pragma once; in particular, header guards or include guards (see https://en.wikipedia.org/wiki/Include_guard).</p>
+<p>Another (perhaps more reliable) method of ensuring the header is not included twice is to use a “header guard”. A header file with a header guard consists of the following:</p>
+<p>A #ifndef directive to check if some identifier is already defined</p>
+<p>A #define directive to define that identifier if it is not (so it will be defined the next time that it is checked by #ifndef)</p>
+<p>The prototypes and definitions</p>
+<p>A #endif directive to end the #ifndef directive</p>
+<p>To try out a header guard, modify pingpong.h so it reads as follows:</p>
+<p>// Use Header Guards to prevent these prototypes from being added</p>
+<p>// more than once in a file</p>
+<p>//#pragma once // will ensure that the file is only loaded once</p>
+<p>#ifndef PINGPONG_H // If Not Defined (will be true the first time it is encountered)</p>
+<p>#define PINGPONG_H // Define (makes the ifndef false every other time)</p>
+<p>#define MAX_PING_PONGS 10 // Maximum number of ping-pong calls</p>
+<p>// Must write function prototypes to indicate that these functions</p>
+<p>// are coded somewhere in the project</p>
+<br>
+<pre><code class="language-c">void ping();
+void pong(); // semicolons after function prototypes</code></pre>
+<p>#endif // End the ifndef</p>
+<p>You will not see any changes in how the program runs or compiles, but it is good practice to always include header guards or #pragma once in your header files. You will see both methods used in system header files (for instance, if you look back at the code for &lt;stdbool.h&gt; that we found earlier, you will see that it uses a header guard).</p>
+</div>
+</div></body></html>

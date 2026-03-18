@@ -1,0 +1,13 @@
+﻿<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/SP-Global-2015.css"><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/SP-bootstrap-grid.css"><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script><script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script><link rel="stylesheet" type="text/css" href="https://online.saskpolytech.ca/shared/sp-template/styles/jquery-ui.min.css"><script src="https://online.saskpolytech.ca/shared/sp-template/scripts/snippets/accordion.js"></script><script>$(document).ready(function(){ $("h1:first").addClass("sr-only"); });</script><title>Lesson 02 Basics - Constants</title></head><body><h1>Lesson 02 Basics - Constants</h1><div class="row"><div class="col-sm-12"><h2 class="h2">Constants</h2><p class="lead">Quick highlights:</p><ul class="list"><li>Use <code>const</code> to disallow reassignment</li><li>Literal suffixes: e.g., <code>3.14f</code></li></ul><hr><h3 class="h3">Details</h3>
+<p>C can also have constants. Use the keyword const in front of the variable declaration and set the variable equal to its value on the same line as the declaration. A constant cannot be assigned a new value.</p>
+<p>Try adding the following code in main:</p>
+<p>	constantsDemo();</p>
+<p>Then above main, add the following constantsDemo function:</p>
+<br><pre><code class="language-c">void constantsDemo()
+{</code></pre>
+<p>	// Note keyword const</p>
+<p>	const float pi = 3.141519f;</p>
+<p>	//pi = pi + 1; // cannot change the value – see error if uncommented</p>
+<br><pre><code class="language-c">	printf(&quot;The value of pi is %f\n&quot;, pi);
+}</code></pre>
+</div></div></body></html>

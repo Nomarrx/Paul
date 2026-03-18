@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html><head><link rel="stylesheet" href="https://templates.lcs.brightspace.com/lib/assets/css/styles.min.css"><link rel="stylesheet" href="/shared/sp-template/styles/SP-bootstrap-grid.css" data-override="override"></head><body style="color: rgb(32, 33, 34); font-family: verdana, sans-serif; font-size: 12px;"><table style="border-collapse: collapse; border-width: 1px;" border="1">
+<tbody>
+<tr>
+<th style="border-width: 1px;">Precedence</th>
+<th style="border-width: 1px;">Operator</th>
+<th style="border-width: 1px;">Description</th>
+<th style="border-width: 1px;">Associativity</th>
+</tr>
+<tr>
+<th rowspan="6" style="border-width: 1px;">1</th>
+<td style="border-width: 1px;"><code>++</code> <code>--</code></td>
+<td style="border-width: 1px;">Suffix/postfix increment and decrement</td>
+<td rowspan="6" style="border-width: 1px;">Left-to-right</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>()</code></td>
+<td style="border-width: 1px;">Function call</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>[]</code></td>
+<td style="border-width: 1px;">Array subscripting</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>.</code></td>
+<td style="border-width: 1px;">Structure and union member access</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>-&gt;</code></td>
+<td style="border-width: 1px;">Structure and union member access through pointer</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>(<em>type</em>){<em>list</em>}</code></td>
+<td style="border-width: 1px;">Compound literal(C99)</td>
+</tr>
+<tr>
+<th rowspan="8" style="border-width: 1px;">2</th>
+<td style="border-width: 1px;"><code>++</code> <code>--</code></td>
+<td style="border-width: 1px;">Prefix increment and decrement<sup id="cite_ref-1"></sup></td>
+<td rowspan="8" style="border-width: 1px;">Right-to-left</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>+</code> <code>-</code></td>
+<td style="border-width: 1px;">Unary plus and minus</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>!</code> <code>~</code></td>
+<td style="border-width: 1px;">Logical NOT and bitwise NOT</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>(<em>type</em>)</code></td>
+<td style="border-width: 1px;">Cast</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>*</code></td>
+<td style="border-width: 1px;">Indirection (dereference)</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>&amp;</code></td>
+<td style="border-width: 1px;">Address-of</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>sizeof</code></td>
+<td style="border-width: 1px;">Size-of<sup id="cite_ref-2"></sup></td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>_Alignof</code></td>
+<td style="border-width: 1px;">Alignment requirement(C11)</td>
+</tr>
+<tr>
+<th style="border-width: 1px;">3</th>
+<td style="border-width: 1px;"><code>*</code> <code>/</code> <code>%</code></td>
+<td style="border-width: 1px;">Multiplication, division, and remainder</td>
+<td rowspan="11" style="border-width: 1px;">Left-to-right</td>
+</tr>
+<tr>
+<th style="border-width: 1px;">4</th>
+<td style="border-width: 1px;"><code>+</code> <code>-</code></td>
+<td style="border-width: 1px;">Addition and subtraction</td>
+</tr>
+<tr>
+<th style="border-width: 1px;">5</th>
+<td style="border-width: 1px;"><code>&lt;&lt;</code> <code>&gt;&gt;</code></td>
+<td style="border-width: 1px;">Bitwise left shift and right shift</td>
+</tr>
+<tr>
+<th rowspan="2" style="border-width: 1px;">6</th>
+<td style="border-width: 1px;"><code>&lt;</code> <code>&lt;=</code></td>
+<td style="border-width: 1px;">For relational operators &lt; and ≤ respectively</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>&gt;</code> <code>&gt;=</code></td>
+<td style="border-width: 1px;">For relational operators &gt; and ≥ respectively</td>
+</tr>
+<tr>
+<th style="border-width: 1px;">7</th>
+<td style="border-width: 1px;"><code>==</code> <code>!=</code></td>
+<td style="border-width: 1px;">For relational = and ≠ respectively</td>
+</tr>
+<tr>
+<th style="border-width: 1px;">8</th>
+<td style="border-width: 1px;"><code>&amp;</code></td>
+<td style="border-width: 1px;">Bitwise AND</td>
+</tr>
+<tr>
+<th style="border-width: 1px;">9</th>
+<td style="border-width: 1px;"><code>^</code></td>
+<td style="border-width: 1px;">Bitwise XOR (exclusive or)</td>
+</tr>
+<tr>
+<th style="border-width: 1px;">10</th>
+<td style="border-width: 1px;"><code>|</code></td>
+<td style="border-width: 1px;">Bitwise OR (inclusive or)</td>
+</tr>
+<tr>
+<th style="border-width: 1px;">11</th>
+<td style="border-width: 1px;"><code>&amp;&amp;</code></td>
+<td style="border-width: 1px;">Logical AND</td>
+</tr>
+<tr>
+<th style="border-width: 1px;">12</th>
+<td style="border-width: 1px;"><code>||</code></td>
+<td style="border-width: 1px;">Logical OR</td>
+</tr>
+<tr>
+<th style="border-width: 1px;">13</th>
+<td style="border-width: 1px;"><code>?:</code></td>
+<td style="border-width: 1px;">Ternary conditional<sup id="cite_ref-3"></sup></td>
+<td rowspan="6" style="border-width: 1px;">Right-to-left</td>
+</tr>
+<tr>
+<th rowspan="5" style="border-width: 1px;">14<sup id="cite_ref-4"></sup></th>
+<td style="border-width: 1px;"><code>=</code></td>
+<td style="border-width: 1px;">Simple assignment</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>+=</code> <code>-=</code></td>
+<td style="border-width: 1px;">Assignment by sum and difference</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>*=</code> <code>/=</code> <code>%=</code></td>
+<td style="border-width: 1px;">Assignment by product, quotient, and remainder</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>&lt;&lt;=</code> <code>&gt;&gt;=</code></td>
+<td style="border-width: 1px;">Assignment by bitwise left shift and right shift</td>
+</tr>
+<tr>
+<td style="border-width: 1px;"><code>&amp;=</code> <code>^=</code> <code>|=</code></td>
+<td style="border-width: 1px;">Assignment by bitwise AND, XOR, and OR</td>
+</tr>
+<tr>
+<th style="border-width: 1px;">15</th>
+<td style="border-width: 1px;"><code>,</code></td>
+<td style="border-width: 1px;">Comma</td>
+<td style="border-width: 1px;">Left-to-right</td>
+</tr>
+</tbody>
+</table>
+<p></p></body></html>
