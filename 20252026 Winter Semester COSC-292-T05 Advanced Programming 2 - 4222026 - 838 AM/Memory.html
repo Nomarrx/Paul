@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+<title>Lesson — Memory</title>
+</head><body><h1>Lesson — Memory</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Develop code to reference and manipulate static memory with pointers.</p>
+<p><strong>Assessment alignment:</strong> Midterm 1 (Memory fundamentals).</p>
+</div>
+</div>
+<h2>Memory in C</h2>
+<p>Because C works should look at how it stores values in memory. Memory is <strong>byte-addressable</strong>, so we can access the value of each individual byte. Each byte has its own address, generally written in hexadecimal.</p>
+<p>Since a byte is 8 bits, we often write byte values in hexadecimal as well, because each hexadecimal digit corresponds to 4 bits, so 2 hexadecimal digits fully represent a byte.</p>
+<h3>Hexadecimal and Binary Review</h3>
+<table border="1" cellpadding="4">
+<tbody>
+<tr>
+<th>Decimal</th>
+<th>Hexadecimal</th>
+<th>Binary</th>
+</tr>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0000</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0001</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>0010</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3</td>
+<td>0011</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4</td>
+<td>0100</td>
+</tr>
+<tr>
+<td>5</td>
+<td>5</td>
+<td>0101</td>
+</tr>
+<tr>
+<td>6</td>
+<td>6</td>
+<td>0110</td>
+</tr>
+<tr>
+<td>7</td>
+<td>7</td>
+<td>0111</td>
+</tr>
+<tr>
+<td>8</td>
+<td>8</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>9</td>
+<td>9</td>
+<td>1001</td>
+</tr>
+<tr>
+<td>10</td>
+<td>A</td>
+<td>1010</td>
+</tr>
+<tr>
+<td>11</td>
+<td>B</td>
+<td>1011</td>
+</tr>
+<tr>
+<td>12</td>
+<td>C</td>
+<td>1100</td>
+</tr>
+<tr>
+<td>13</td>
+<td>D</td>
+<td>1101</td>
+</tr>
+<tr>
+<td>14</td>
+<td>E</td>
+<td>1110</td>
+</tr>
+<tr>
+<td>15</td>
+<td>F</td>
+<td>1111</td>
+</tr>
+</tbody>
+</table>
+<h3>Visualizing Memory</h3>
+<p>Memory can be visualized as an array with each memory location taking up one spot. For instance, suppose we are working with a 32-bit platform (like the x86 platform in Visual Studio 2022). We might see a chunk of memory with addresses like the following (note that we will write the addresses going up from the bottom – a reason for this will be explained later):</p>
+<table border="1" cellpadding="4">
+<tbody>
+<tr>
+<th>Byte’s Address</th>
+<th>Byte’s Value</th>
+</tr>
+<tr>
+<td>0x0019FEDF</td>
+<td>?</td>
+</tr>
+<tr>
+<td>0x0019FEDE</td>
+<td>?</td>
+</tr>
+<tr>
+<td>0x0019FEDD</td>
+<td>?</td>
+</tr>
+<tr>
+<td>0x0019FEDC</td>
+<td>?</td>
+</tr>
+<tr>
+<td>0x0019FEDB</td>
+<td>?</td>
+</tr>
+<tr>
+<td>0x0019FEDA</td>
+<td>?</td>
+</tr>
+<tr>
+<td>0x0019FED9</td>
+<td>?</td>
+</tr>
+<tr>
+<td>0x0019FED8</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+<h3>Example Code</h3>
+<pre><code class="language-c">
+int iTest = 0x12569ADE; // 0x for hex value - 307,665,630 in decimal<br>char cTest = 'A'; // ASCII value 65 or 0x41 in hex
+</code></pre>
+<p>The variables <code>cTest</code> and <code>iTest</code> would both have locations in memory, so we could add their aliases and values to our table of values. Note that these are just examples of where the variables could be stored in memory – where variables would be stored exactly depends on multiple factors.</p>
+<table border="1" cellpadding="4" style="width: 27.8246%; height: 363px;">
+<tbody>
+<tr style="height: 59px;">
+<th style="width: 43.8622%;">Byte’s Address</th>
+<th style="width: 18.5976%;">Alias</th>
+<th style="width: 37.1952%;">Byte’s Value</th>
+</tr>
+<tr style="height: 38px;">
+<td style="width: 43.8622%;">0x0019FEDF</td>
+<td style="width: 18.5976%;"></td>
+<td style="width: 37.1952%;">?</td>
+</tr>
+<tr style="height: 38px;">
+<td style="width: 43.8622%;">0x0019FEDE</td>
+<td style="width: 18.5976%;"></td>
+<td style="width: 37.1952%;">?</td>
+</tr>
+<tr style="height: 38px;">
+<td style="width: 43.8622%;">0x0019FEDD</td>
+<td style="width: 18.5976%;"></td>
+<td style="width: 37.1952%;">?</td>
+</tr>
+<tr style="height: 38px;">
+<td style="width: 43.8622%;">0x0019FEDC</td>
+<td style="width: 18.5976%;">cTest</td>
+<td style="width: 37.1952%;">0x41 = 'A'</td>
+</tr>
+<tr style="height: 38px;">
+<td style="width: 43.8622%;">0x0019FEDB</td>
+<td rowspan="4" style="width: 18.5976%; text-align: center;">
+<p></p>
+<p></p>
+<p>iTest</p>
+</td>
+<td rowspan="4" style="width: 37.1952%; text-align: center;">
+<p></p>
+<p></p>
+<p>0x12569AE</p>
+</td>
+</tr>
+<tr style="height: 38px;">
+<td style="width: 43.8622%;">0x0019FEDA</td>
+</tr>
+<tr style="height: 38px;">
+<td style="width: 43.8622%;">0x0019FED9</td>
+</tr>
+<tr style="height: 38px;">
+<td style="width: 43.8622%;">0x0019FED8</td>
+</tr>
+</tbody>
+</table>
+<p>Since <code>iTest</code> is an <code>int</code>, it takes up 4 bytes. Since we wrote the value for <code>iTest</code> in hexadecimal, we know those bytes contain the values <code>0x12</code>, <code>0x56</code>, <code>0x9A</code>, and <code>0xDE</code>. (Note that the <code>0x</code> is not stored by the machine – it just indicates the number that we are writing is in hexadecimal.)</p>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>Wikipedia contributors. Hexadecimal and memory addressing. Retrieved from https://en.wikipedia.org/wiki/Hexadecimal</p>
+</div></body></html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+<title>Lesson — Structures in C: Examples</title>
+</head><body><h1>Lesson — Structures in C: Examples</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Develop code using C structures, typedefs, and dynamic allocation safely.</p>
+<p><strong>Assessment alignment:</strong> Final Exam (Structs: layout, init, pass-by-value vs pointer, heap management).</p>
+</div>
+</div>
+<h2>Basic structs and typedef (header)</h2>
+<p>In practice, define structs in a header so multiple source files can include them.</p>
+<h3><code>structs.h</code></h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#ifndef STRUCTS_H
+#define STRUCTS_H
+
+#define NAME_SIZE        5
+
+// How to define a struct without a typedef.
+// We rarely create structs this way - too cumbersome.
+struct BirthDate
+{
+    // Attributes
+    char cName[NAME_SIZE];
+    char cGender;
+    int  day;
+    int  month;
+    int  year;
+};
+
+// Example of declaring a struct using a typedef
+typedef struct
+{
+    // Attributes
+    char cName[NAME_SIZE];
+    char cGender;
+    int  day;
+    int  month;
+    int  year;
+} BirthDateTD;
+
+#endif // !STRUCTS_H</code></pre>
+<h2>Size and alignment</h2>
+<p>Alignment can affect struct size. On typical ABIs, members are aligned (e.g., 4‑byte boundaries for <code>int</code>). The order of members can change padding → which changes <code>sizeof(struct)</code>.</p>
+<h3><code>program.c</code> (check sizes)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include "structs.h"
+
+int main(void)
+{
+    printf("Size of struct BirthDate is: %zu\n", sizeof(struct BirthDate));
+    printf("Size of BirthDateTD is: %zu\n", sizeof(BirthDateTD));
+    return EXIT_SUCCESS;
+}</code></pre>
+<p>With <code>NAME_SIZE=5</code> and default packing (common x86/x64 ABIs), you may see <code>20</code> bytes due to padding. If you move <code>cGender</code> last, you may see <code>24</code> bytes (extra padding).</p>
+<h3>Change packing with <code>#pragma pack</code> (MSVC)</h3>
+<p>To demonstrate forced 1‑byte packing (implementation-specific; MSVC), wrap the typedef with:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">#pragma pack(push)     // save current packing
+#pragma pack(1)        // set byte alignment to 1
+
+typedef struct
+{
+    char cName[NAME_SIZE];
+    char cGender;
+    int  day;
+    int  month;
+    int  year;
+} BirthDateTD;
+
+#pragma pack(pop)      // restore default packing</code></pre>
+<p>Now <code>sizeof(BirthDateTD)</code> should print as <code>18</code> (<code>5 + 1 + 4 + 4 + 4</code>) regardless of field order.</p>
+<hr>
+<h2>Basic struct usage</h2>
+<h3>Initialize and display (stack-allocated)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">// structs.c
+#include &lt;stdio.h&gt;
+#include "structs.h"
+
+void DisplayBirthDateBasic(struct BirthDate bd)
+{
+    printf("\nName is %s\n", bd.cName);
+    printf("Gender is %c\n", bd.cGender);
+    printf("Date is %d %d %d\n", bd.day, bd.month, bd.year);
+}</code></pre>
+<pre class="line-numbers d2l-code"><code class="language-c">// program.c (continued)
+void testStructureBasicFormat(void)
+{
+    // Creates a struct instance on the stack
+    struct BirthDate bd1;
+
+    // Uninitialized members contain indeterminate data (garbage).
+    bd1.day = 17;
+    DisplayBirthDateBasic(bd1);
+
+    // Correct full initialization in declared order:
+    struct BirthDate bd2 = { "Ada", 'f', 21, 3, 1987 };
+    DisplayBirthDateBasic(bd2);
+
+    // Wrong order / wrong count: shows why order matters and C won't validate:
+    // struct BirthDate bad = { "Ada", 21, 3, 1987 };        // wrong types/order
+    // struct BirthDate alsoBad = { "Ada", 21, 3, 1987, 'f' }; // extra item
+
+    // Update an attribute
+    bd2.month = 4;
+    DisplayBirthDateBasic(bd2);
+
+    // Direct memory manipulation (demonstration only; not good practice):
+    // day is an int; &amp;bd2.day + 2 moves past month (int) to year (int)
+    *(&amp;bd2.day + 2) = 1999;
+    DisplayBirthDateBasic(bd2);
+}</code></pre>
+<hr>
+<h2>Typedef style (cleaner declarations)</h2>
+<h3>Display and use typedef’d struct</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">// structs.c
+void DisplayBirthDateTypedef(BirthDateTD bd)
+{
+    printf("\nName is %s\n", bd.cName);
+    printf("Gender is %c\n", bd.cGender);
+    printf("Date is %d %d %d\n", bd.day, bd.month, bd.year);
+}</code></pre>
+<pre class="line-numbers d2l-code"><code class="language-c">// program.c
+void testStructureDeclarationsWithTypedef(void)
+{
+    BirthDateTD bd = { "Mike", 'm', 31, 12, 1980 };
+    DisplayBirthDateTypedef(bd);
+
+    // Struct assignment copies bytes (value semantics)
+    BirthDateTD bd1 = bd;   // copy
+    bd1.day = 1;            // does not affect bd
+
+    DisplayBirthDateTypedef(bd);
+    DisplayBirthDateTypedef(bd1);
+}</code></pre>
+<h3>Pass-by-value vs pointer (by-ref)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">// structs.c
+void AlterBirthDate(BirthDateTD bd)
+{
+    printf("\nSize of passed in BirthDateTD is %zu\n", sizeof(bd)); // e.g., 18
+    bd.year = 2001;                        // modifies the local copy only
+    DisplayBirthDateTypedef(bd);
+}
+
+void AlterBirthDateByRef(BirthDateTD* bdPtr)
+{
+    printf("\nSize of passed in bdPtr: %zu\n", sizeof(bdPtr)); // pointer size
+    // (*bdPtr).year = 2023;  // clumsy
+    bdPtr-&gt;year = 2023;       // preferred: arrow operator
+}</code></pre>
+<pre class="line-numbers d2l-code"><code class="language-c">// program.c
+void demoPassSemantics(void)
+{
+    BirthDateTD bd = { "Mike", 'm', 31, 12, 1980 };
+
+    AlterBirthDate(bd);       // changes only inside the function
+    DisplayBirthDateTypedef(bd);
+
+    AlterBirthDateByRef(&amp;bd); // changes caller's instance
+    DisplayBirthDateTypedef(bd);
+}</code></pre>
+<hr>
+<h2>Dynamic allocation of structs</h2>
+<h3>Incorrect: using a pointer without allocating memory</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">void testDynamicallyAllocatedStructs_bad(void)
+{
+    BirthDateTD* bdPtr = NULL;
+
+    // Crashes: no memory allocated for the struct yet
+    // bdPtr-&gt;day = 12;
+}</code></pre>
+<h3>Correct: allocate, use, then free</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+void testDynamicallyAllocatedStructs(void)
+{
+    BirthDateTD* bdPtr = (BirthDateTD*)malloc(sizeof(BirthDateTD));
+    if (bdPtr != NULL)
+    {
+        bdPtr-&gt;day = 13;
+        strcpy_s(bdPtr-&gt;cName, NAME_SIZE, "Mike"); // include &lt;string.h&gt;
+
+        // Display function expects a struct instance, not pointer
+        DisplayBirthDateTypedef(*bdPtr);
+
+        // Always free heap memory you own
+        free(bdPtr);
+        bdPtr = NULL;
+    }
+}</code></pre>
+<hr>
+<h2>Structs with dynamically allocated attributes</h2>
+<h3><code>student</code> (name and marks allocated dynamically)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">typedef struct
+{
+    // Some of the attributes are dynamically allocated
+    char* cNamePtr;
+    int   iStudentNum;
+
+    // Array of marks
+    int*  iMarksPtr;
+    // Number of marks in the marks array
+    int   iMarksCount;
+} student;</code></pre>
+<p>On x64, pointer members align to 8 bytes; on x86 to 4 bytes, so <code>sizeof(student)</code> varies by platform.</p>
+<h3>Test driver</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">void testStudent(void)
+{
+    int iMarksArray[] = { 95, 100, 85 };
+
+    student* sPtr = CreateStudent("Mike Grzesina", 123456789,
+                                  iMarksArray,
+                                  (int)(sizeof(iMarksArray) / sizeof(int)));
+
+    DisplayStudent(*sPtr);
+    FreeStudent(sPtr);
+    sPtr = NULL;
+}</code></pre>
+<h3>Create / Display / Free</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+// Create and initialize a student (like “new” + constructor)
+student* CreateStudent(char* cNamePtr, int iNum, int* iMarksPtr, int iMarkCount)
+{
+    student* sPtr = (student*)malloc(sizeof(student));
+
+    if (sPtr != NULL)
+    {
+        // name
+        sPtr-&gt;cNamePtr = (char*)malloc((strlen(cNamePtr) + 1) * sizeof(char));
+        strcpy(sPtr-&gt;cNamePtr, cNamePtr);
+
+        // id
+        sPtr-&gt;iStudentNum = iNum;
+
+        // marks
+        sPtr-&gt;iMarksPtr = (int*)malloc(iMarkCount * sizeof(int));
+        memcpy(sPtr-&gt;iMarksPtr, iMarksPtr, iMarkCount * sizeof(int));
+        sPtr-&gt;iMarksCount = iMarkCount;
+    }
+    return sPtr;
+}
+
+// Display by value (copy) to avoid accidental modification
+void DisplayStudent(student s)
+{
+    printf("\nName: %s\n", s.cNamePtr);
+    printf("Student number: %d\n", s.iStudentNum);
+    printf("Marks: ");
+    for (int i = 0; i &lt; s.iMarksCount; i++)
+    {
+        printf("%d ", s.iMarksPtr[i]);
+    }
+    printf("\n");
+}
+
+// Free nested allocations first, then the struct
+void FreeStudent(student* sPtr)
+{
+    free(sPtr-&gt;cNamePtr);  sPtr-&gt;cNamePtr = NULL;
+    free(sPtr-&gt;iMarksPtr); sPtr-&gt;iMarksPtr = NULL;
+
+    free(sPtr); // design decision: free only if dynamically allocated
+}</code></pre>
+<hr>
+<h2>Pointers to pointers to structs (e.g., classroom with student list)</h2>
+<h3><code>classroom</code> with array of <code>student*</code></h3>
+<pre class="line-numbers d2l-code"><code class="language-c">typedef struct
+{
+    // A dynamically allocated array of student pointers
+    student** sPtrPtr;
+    // How many students are in the classroom
+    unsigned short sNumStudents;
+} classroom;</code></pre>
+<h3>Get one student from user</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#define MAX_NAME_SIZE 256
+
+student* GetStudent(void)
+{
+    char cName[MAX_NAME_SIZE];
+    int  iMarks[2];
+    int  iStudentNum;
+
+    // Name
+    printf("Enter the student name: ");
+    gets_s(cName, MAX_NAME_SIZE);
+
+    // Number
+    printf("Enter the student number: ");
+    scanf("%d", &amp;iStudentNum);
+
+    // Two marks
+    printf("Enter two marks separated by a space: ");
+    scanf("%d %d", iMarks, iMarks + 1);
+    getc(stdin); // clear newline
+
+    return CreateStudent(cName, iStudentNum, iMarks, 2);
+}</code></pre>
+<h3>Populate, display, and free classroom</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">classroom PopulateClassroom(void)
+{
+    classroom c;
+
+    printf("How many students are in the classroom? ");
+    scanf("%hu", &amp;c.sNumStudents);
+    getc(stdin);
+
+    c.sPtrPtr = (student**)malloc(c.sNumStudents * sizeof(student*));
+
+    for (int i = 0; i &lt; c.sNumStudents; i++)
+    {
+        c.sPtrPtr[i] = GetStudent();
+    }
+    return c;
+}
+
+void DisplayClassroom(classroom c)
+{
+    printf("\nDisplaying the classroom:\n");
+    for (int i = 0; i &lt; c.sNumStudents; i++)
+    {
+        DisplayStudent(*(c.sPtrPtr[i])); // pass by value
+    }
+}
+
+void FreeClassroom(classroom* classPtr)
+{
+    // Free each student (which frees nested allocations)
+    for (int i = 0; i &lt; classPtr-&gt;sNumStudents; i++)
+    {
+        FreeStudent(classPtr-&gt;sPtrPtr[i]);
+        classPtr-&gt;sPtrPtr[i] = NULL;
+    }
+
+    // Free the array of pointers
+    free(classPtr-&gt;sPtrPtr);
+    classPtr-&gt;sPtrPtr = NULL;
+
+    // We did not heap-allocate 'classroom' itself in this design; do not free it.
+}</code></pre>
+<pre class="line-numbers d2l-code"><code class="language-c">void testClassroom(void)
+{
+    classroom c = PopulateClassroom();
+    DisplayClassroom(c);
+    FreeClassroom(&amp;c);
+}</code></pre>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Notes &amp; Tips</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<ul>
+<li>Uninitialized struct members contain indeterminate values (garbage). Always initialize before use.</li>
+<li>Struct assignment copies all bytes (value semantics). Passing by value copies; passing a pointer does not.</li>
+<li>When freeing nested dynamic fields, free children first, then the parent struct.</li>
+<li><code>#pragma pack</code> is compiler/ABI-specific; use for demonstration/testing, not typically in production portability scenarios.</li>
+</ul>
+</div></body></html>

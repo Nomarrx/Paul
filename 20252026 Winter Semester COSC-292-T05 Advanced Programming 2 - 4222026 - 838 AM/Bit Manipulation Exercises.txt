@@ -1,0 +1,59 @@
+//For each question below, design a suitable test function. 
+
+//Question 1 
+//Write a function called swapNibbles.  Given a single byte as a parameter, 
+//swap the high order nibble with the low order nibble. 
+unsigned char swapNibbles(unsigned char a) 
+ 
+
+//Question 2 
+//Write a function called blendNibbles.  Given two bytes first and second, 
+//take the high order nibble of "second" and store it in the lower nibble of "first" 
+unsigned char blendNibbles(unsigned char first, unsigned char second) 
+
+ 
+//Question 3 
+//Write a function called reverseBits.  Given an integer, return another integer where 
+//the bits are reversed.  So, pass in 10001101 and return 10110001 
+unsigned int reverseBits(unsigned int data) 
+ 
+
+//Question 4 
+//Check out the precedence chart at https://en.cppreference.com/w/c/language/operator_precedence 
+//Write a function called testPrecedence.  Write some test cases to test the precedence 
+//of various operators.  For example, x | y << 1 (| or << have precedence?). 
+void testPrecedence() 
+
+
+	// Question 5a
+	// Write a function that will ask the user for a y/n answer
+	// asking if they speak various languages
+	// e.g. Do you speak English (y/n)?
+	//      Do you speak French (y/n)?
+	//      Do you speak Plains Cree (y/n)?
+	// Have the function return a single unsigned char with bits set for each answer
+	// 1 for yes, 0 for no
+	unsigned char languages = languageQuestions();
+
+	// Question 5b
+	// Write a second function that will take in an unsigned char and will print
+	// greetings for each language that the unsigned char has bits set for
+	// e.g. Hello
+	//      Bonjour
+	//      Tan'si
+	printGreetings(languages);
+
+
+	// Question 6
+	// When done, create a new project (or write functions within this project)
+	// that will ask for an input filename and an output filename,
+	// then read each byte from the input filename (use fgetc), combine that byte with
+	// a byte from the file "random.pad" (in the Exercises folder) using XOR, and write
+	// the combined byte to the output filename (use fputc).
+	// That will create an encrypted file (using random pad or one-time pad encryption)
+	// which can be decrypted by using the encrypted file as the input filename.
+// https://en.wikipedia.org/wiki/One-time_pad
+// Try it on message.ciphertext to decode the secret message that I created!
+
+
+Answers posted in BitwiseManipulation project and RandomPadEncryption project under GroupA/GroupB

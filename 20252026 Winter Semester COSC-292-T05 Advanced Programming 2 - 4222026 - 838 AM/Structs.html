@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+<title>Lesson — Structures in C: Overview &amp; Definition</title>
+</head><body><h1>Lesson — Structures in C: Overview &amp; Definition</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Develop code using C structures to model related data.</p>
+<p><strong>Assessment alignment:</strong> Final Exam (Structs fundamentals).</p>
+</div>
+</div>
+<h2>What is a <code>struct</code>?</h2>
+<p>A <strong>structure</strong> (record) is a user-defined data type that groups values of possibly <em>different</em> types into one entity. Unlike arrays (same-type elements accessed by index), struct members can have different types and are accessed by <strong>name</strong>.</p>
+<ul>
+<li>Declared with the keyword <code>struct</code>.</li>
+<li>Members can be primitives, pointers, arrays, other structs, and even function pointers.</li>
+<li>No access modifiers (e.g., <code>public</code>/<code>private</code>) in C; no inheritance or polymorphism.</li>
+</ul>
+<h2>Struct declaration syntax</h2>
+<pre class="line-numbers d2l-code"><code class="language-c">struct TypeName
+{
+    // member variable 1;
+    // member variable 2;
+    // ...
+} /* optional variable instances here */;</code></pre>
+<p><strong>Note:</strong> Adding instance variable names at the end is valid but rarely used.</p>
+<h3>Example: BirthDate record</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#define NAME_SIZE 64
+
+struct BirthDate
+{
+    // Attributes
+    char cName[NAME_SIZE];
+    char cGender;
+    int  day;
+    int  month;
+    int  year;
+};</code></pre>
+<h3>Optional “instances at declaration” (rare in practice)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">struct BirthDate
+{
+    char cName[NAME_SIZE];
+    char cGender;
+    int  day;
+    int  month;
+    int  year;
+} B1, B2; // valid but uncommon style</code></pre>
+<h2>Declaring variables and parameters</h2>
+<pre class="line-numbers d2l-code"><code class="language-c">// As a variable:
+struct BirthDate bd1;
+
+// As a function parameter:
+void DisplayBirthDate(struct BirthDate bd);</code></pre>
+<p>This style requires repeating the keyword <code>struct</code> at each use — many codebases switch to a <code>typedef</code> for convenience (next page).</p>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>C language structures (cppreference): https://en.cppreference.com/w/c/language/struct</p>
+<p>ISO C11 §6.7.2.1 (struct/union specifiers): official standard text (via compiler docs)</p>
+</div></body></html>

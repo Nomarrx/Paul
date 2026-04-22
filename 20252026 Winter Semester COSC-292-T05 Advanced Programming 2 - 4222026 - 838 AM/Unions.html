@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+ <title>Lesson — Unions</title>
+</head><body><h1>Lesson — Unions</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Develop code that models and manipulates data in memory using C unions.</p>
+<p><strong>Assessment alignment:</strong> Final Exam (Unions, layout, and member access).</p>
+</div>
+</div>
+<h2>What is a union?</h2>
+<p>A <strong>union</strong> is like a <code>struct</code> in syntax, but **all members share the same memory region**. Only one member is intended to be valid at a time. The size of a union is the size of its **largest member**.</p>
+<hr>
+<h2>Example: fertilizer quantity stored in different units</h2>
+<h3>Definition</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">typedef union
+{
+    unsigned char truckloads;
+    unsigned int  bags;
+    double        tons;
+} FertilizerQuantity;</code></pre>
+<h3>Test function</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+
+void testFertilizerUnion(void)
+{
+    FertilizerQuantity fq;
+
+    // How big is the union in bytes?
+    printf("Size of union is %zu\n", sizeof(fq)); // 8 (largest is double on typical platforms)
+
+    // Set one member
+    fq.truckloads = 3;
+
+    printf("The value of truckloads is: %d\n",  fq.truckloads);
+    printf("The value of bags is:       %u\n",  fq.bags);
+    printf("The value of tons is:       %f\n",  fq.tons);
+
+    // All members share the same base address
+    printf("The address of truckloads is: %p\n", (void*)&amp;fq.truckloads);
+    printf("The address of bags is:       %p\n", (void*)&amp;fq.bags);
+    printf("The address of tons is:       %p\n", (void*)&amp;fq.tons);
+
+    // Now set a different member
+    fq.bags = 400;
+    printf("\nAfter setting bags = 400:\n");
+    printf("truckloads (low byte of 400): %d\n", fq.truckloads);
+    printf("bags:                         %u\n", fq.bags);
+
+    // Now set the largest member
+    fq.tons = 12345.6789;
+    printf("\nAfter setting tons = 12345.6789:\n");
+    printf("tons:       %f\n", fq.tons);
+    printf("truckloads: %d\n", fq.truckloads);
+    printf("bags:       %u\n", fq.bags);
+}</code></pre>
+<h3>What to notice</h3>
+<ul>
+<li><strong>Shared storage:</strong> Writing one member overwrites the bytes used by the others.</li>
+<li><strong>Size equals largest member:</strong> Here, <code>sizeof(FertilizerQuantity)</code> matches <code>sizeof(double)</code>.</li>
+<li><strong>Addresses:</strong> Printing addresses of each member shows they map to the same location.</li>
+<li><strong>Only the last written member is meaningful</strong> (reading a different member just reinterprets bytes).</li>
+</ul>
+<hr>
+<h2>Example: interpreting a 32‑bit color as a whole value or components</h2>
+<p>A union can present **two valid views** of the same bytes (e.g., a 32‑bit integer and a 4‑byte component struct).</p>
+<h3>Definitions</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">typedef struct {
+    unsigned char a; // alpha (transparency)
+    unsigned char b; // blue
+    unsigned char g; // green
+    unsigned char r; // red
+} pixel32;
+
+typedef union {
+    unsigned int val;     // 32-bit packed color
+    pixel32      components; // 4 one-byte components
+} colorVal;</code></pre>
+<h3>Test function</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#include &lt;stdio.h&gt;
+
+void testColorConversion(void)
+{
+    colorVal c;
+
+    printf("Size of pixel32 is %zu\n", sizeof(pixel32));
+    printf("Size of colorVal is %zu\n\n", sizeof(colorVal));
+
+    c.val = 0x2A3BFF1C;     // set all 4 bytes at once
+    c.components.a = 0xFF;  // change only the alpha byte
+
+    printf("The whole int is %x\n", c.val);
+    printf("The Red component is %x\n",   c.components.r);
+    printf("The Green component is %x\n", c.components.g);
+    printf("The Blue component is %x\n",  c.components.b);
+    printf("The alpha channel (transparency) is %x\n", c.components.a);
+}</code></pre>
+<h3>What to notice</h3>
+<ul>
+<li><strong>Both views are 4 bytes:</strong> <code>sizeof(pixel32) == sizeof(unsigned int) == sizeof(colorVal)</code> (typical ABIs).</li>
+<li><strong>Setting the <code>val</code> field</strong> populates all four component bytes at once.</li>
+<li><strong>Changing one component</strong> updates just that byte and thus changes <code>val</code> accordingly.</li>
+<li><strong>Endianness matters:</strong> The mapping of byte order between <code>val</code> and <code>components</code> depends on platform endianness and struct layout rules.</li>
+</ul>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Notes &amp; Tips</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<ul>
+<li>A union’s size equals the size of its largest member; all members start at the same address.</li>
+<li>Use unions when only one representation is “active” at a time, or when you purposely reinterpret the same bytes in multiple ways.</li>
+<li>When reinterpreting bytes (like the color example), remember results can be **platform‑dependent** (endianness, alignment, padding).</li>
+<li>When printing addresses with <code>%p</code>, cast to <code>(void*)</code> for standard‑conforming code.</li>
+</ul>
+</div></body></html>

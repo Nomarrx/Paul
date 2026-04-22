@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+<title>Lesson — Bitwise AND (&amp;)</title>
+</head><body><h1>Lesson — Bitwise AND (&amp;)</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Use bitwise masks to read/clear flags.</p>
+<p><strong>Assessment alignment:</strong> Midterm 1 (Bit masks / AND).</p>
+</div>
+</div>
+<h2>Bitwise AND</h2>
+<p>AND compares bits positionally: result bit is 1 only if both operand bits are 1. Logical AND is <code>&amp;&amp;</code> (don’t confuse).</p>
+<h3>Example</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">void showBits(int value, int bytes);
+
+void bitAND(void)
+{
+    unsigned char a = 0x48;      // 01001000
+    unsigned char b = 0xB8;      // 10111000
+    unsigned char result = (unsigned char)(a &amp; b); // 00001000
+
+    printf("Bitwise AND of a and b is 0x%x\n", result);
+    showBits(a, sizeof(char));
+    showBits(b, sizeof(char));
+    showBits(result, sizeof(char));
+}</code></pre>
+<h3>Masking patterns</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">void demoANDMasks(void)
+{
+    int x = 0x030B1A0F;            // sample value
+    int maskFindBit = 0x00000004;  // test 4's bit
+    int maskClearLSB = 0xFFFFFFFE; // clear bit 0
+
+    showBits(x, sizeof(int));
+    showBits(x &amp; maskFindBit, sizeof(int));     // 0 if bit not set
+    showBits(x &amp; maskClearLSB, sizeof(int));    // clears LSB
+}</code></pre>
+<h3>What to notice</h3>
+<ul>
+<li><strong>Preserve or clear</strong>: 1 in the mask preserves; 0 clears.</li>
+<li><strong>Test a bit</strong>: <code>(x &amp; (1 &lt;&lt; n)) != 0</code> checks if bit n is set.</li>
+<li>Prefer unsigned when working with masks to avoid sign issues.</li>
+</ul>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>Bitwise AND (wiki): https://en.wikipedia.org/wiki/Bitwise_operation#AND</p>
+<p>C bitwise operators overview: https://en.cppreference.com/w/c/language/operator_arithmetic#Bitwise_operators</p>
+</div></body></html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html><head><link rel="stylesheet" href="https://templates.lcs.brightspace.com/lib/assets/css/styles.min.css"><link rel="stylesheet" href="/shared/sp-template/styles/SP-bootstrap-grid.css" data-override="override"></head><body style="color: rgb(32, 33, 34); font-family: verdana, sans-serif; font-size: 12px;"><pre class="line-numbers d2l-code"><code class="language-c">//inclass exersize
+
+//we will create an XOR cypher for a 32 bit stream of text
+//this is known as a one time pad, and is the simplest version of stream encryption.
+// as long as the key is secret, the message is secure, the riskiest part 
+// is getting the keys to source and destination
+//the XOR operation is perfomed
+
+// it will encode with a number =  7,710,604,559,378,602,613 0r 0x6B0191FE8544DA75
+//functionally speaking, an attacker would need to guess this number or otherwise aquire it.
+//brute force calculations will find the number after apx 2^25 calculations, making it relatively secure.
+
+//steps:
+//make a unsigned long long int to store the key, type def it so you do not need to type in
+// unsigned long long int each declaration
+
+//load our text into a variable, simple declarations are fine.
+//create a storage array for the hashed string output, it will need to be an array of unsigned long long ints,
+// with enough space for our block of text.
+
+//Pointer cast our unsigned long long int across our block of text and copy those into our storage array.
+// for the final case if our block of text is not divisible by 8, pad the value with 0s.
+
+//for each element perform an XOR operation with your key. the block of text is encrypted
+
+//print out each character and show the hash in text and then print each out as a hex value
+
+//apply the XOR operation to each element again,
+//attempt to print our each character.
+
+
+// in a proper stream, the encryped text is what is sent over the network and each participant encrypts and then decrypts
+//the messages on their end. This is the same concept as how VPNs operate
+
+//more resistant techniques hash blocks of information rather than byte level only,
+// as 2^8 options is much more crackable than 2^64 options
+//that said a modern data centre could crack it by brute force in 18 seconds at the cheap price of 20 million dollars per centre
+//if you were to use 128 bit encryption it would take apx 2.5 trillion years.
+</code></pre></body></html>

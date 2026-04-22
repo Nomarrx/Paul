@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+<title>Lesson — Bitwise Operators (Overview)</title>
+</head><body><h1>Lesson — Bitwise Operators (Overview)</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Develop code to reference and manipulate memory with pointers and bitwise operations.</p>
+<p><strong>Assessment alignment:</strong> Midterm 1 (Bitwise operations &amp; representation).</p>
+</div>
+</div>
+<h2>Why bitwise?</h2>
+<p>Bitwise operations work at the level of individual bits. They’re primitive CPU operations used to create masks, toggle flags, pack/unpack fields, and implement fast math and protocol logic.</p>
+<h3>Quick recap: bytes vs. bits</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">short sValue = 0x1234;      // hex literal
+unsigned char* cPtr = (unsigned char*)&amp;sValue;
+
+printf("sValue: 0x%x\n", sValue);   // 0x1234
+printf("sValue: %d\n", sValue);     // 4660 on typical platforms
+printf("Byte 0: 0x%02x\n", cPtr[0]); // 0x34 on little-endian
+printf("Byte 1: 0x%02x\n", cPtr[1]); // 0x12 on little-endian</code></pre>
+<p>To change specific bits inside a byte/word, we use **bitwise operators** rather than pointer byte-walking:</p>
+<ul>
+<li><strong>NOT</strong> <code>~</code> (invert bits)</li>
+<li><strong>AND</strong> <code>&amp;</code> (mask to preserve/clear bits)</li>
+<li><strong>OR</strong> <code>|</code> (set bits)</li>
+<li><strong>XOR</strong> <code>^</code> (toggle bits, e.g., for two-way logic)</li>
+<li><strong>Shifts</strong> <code>&lt;&lt;</code> (left), <code>&gt;&gt;</code> (right)</li>
+</ul>
+<h2>Helper: show bits</h2>
+<p>Use this utility to display values as binary (up to 32 bits):</p>
+<pre class="line-numbers d2l-code"><code class="language-c">// Print a value as a string of bits (up to 32 bits)
+void showBits(int value, int bytes)
+{
+    unsigned int filter = 1;
+    int bit;
+
+    char* bitString = (char*)malloc(33);
+    bitString[32] = '\0';
+
+    for (bit = 0; bit &lt; bytes * 8; bit++)
+    {
+        if (value &amp; filter) bitString[31 - bit] = '1';
+        else                bitString[31 - bit] = '0';
+        filter *= 2; // next bit
+    }
+
+    printf("The value %d in binary is \t%s\n",
+           value, &amp;bitString[32 - bytes * 8]);
+
+    free(bitString);
+}</code></pre>
+<p></p>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>Bitwise operations (general): https://en.wikipedia.org/wiki/Bitwise_operation</p>
+<p>ISO C operators overview (cppreference): https://en.cppreference.com/w/c/language/operator_precedence</p>
+</div></body></html>

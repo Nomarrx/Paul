@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+ <title>Lesson — Makefiles</title>
+</head><body><h1>Lesson — Makefiles</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO3 — Use language tools (compiler, linker, build automation) to construct procedural programs.</p>
+<p><strong>Assessment alignment:</strong> Final Exam (Build process and dependencies).</p>
+</div>
+</div>
+<h2>What is a makefile?</h2>
+<p>A <strong>makefile</strong> is a text file that describes how a program is built from source files. It records:</p>
+<ul>
+<li>Which source files belong to the project</li>
+<li>How each source file is compiled</li>
+<li>How object files are linked into an executable</li>
+<li>Which files depend on which other files</li>
+</ul>
+<p>The makefile is processed by a tool called <code>make</code>. On Windows with Microsoft tools, this utility is called <code>nmake</code>.</p>
+<p>While IDEs (like Visual Studio) automate compiling and linking for you, makefiles expose what is actually happening under the hood and allow projects to be built consistently, repeatably, and efficiently.</p>
+<hr>
+<h2>The compile–link model (recap)</h2>
+<p>Building a C program happens in two conceptual phases:</p>
+<ol>
+<li><strong>Compilation</strong>: each <code>.c</code> file is compiled into an object file (<code>.obj</code> on Windows, <code>.o</code> on Unix-like systems).</li>
+<li><strong>Linking</strong>: all object files are combined into a single executable, and references to library functions (e.g., <code>printf</code>) are resolved.</li>
+</ol>
+<p>In small projects this can be done manually, but as projects grow, tracking dependencies and rebuilding only what changed becomes difficult. This is the problem makefiles solve.</p>
+<hr>
+<h2>Example project</h2>
+<p>Consider a small statistics program composed of multiple source files:</p>
+<ul>
+<li><code>stats.c</code> — contains <code>main</code></li>
+<li><code>mathfuncs.c</code> — implements math routines</li>
+<li><code>display.c</code> — handles output</li>
+<li><code>mathfuncs.h</code> — shared function prototypes</li>
+</ul>
+<p>Each <code>.c</code> file is compiled separately, producing object files, and then all object files are linked together into one executable.</p>
+<p>Importantly:</p>
+<ul>
+<li><code>display.c</code> depends on <code>mathfuncs.h</code></li>
+<li><code>mathfuncs.c</code> depends on <code>mathfuncs.h</code></li>
+<li><code>stats.c</code> depends on <code>mathfuncs.h</code></li>
+</ul>
+<p>If <code>mathfuncs.h</code> changes, all files that include it must be recompiled.</p>
+<hr>
+<h2>Basic makefile syntax</h2>
+<p>A makefile is composed of <strong>rules</strong>. Each rule has:</p>
+<ul>
+<li>a <strong>target</strong></li>
+<li>a list of <strong>dependencies</strong></li>
+<li>a <strong>command</strong> to build the target</li>
+</ul>
+<pre class="line-numbers d2l-code"><code class="language-makefile">target: dependency1 dependency2
+command to build target</code></pre>
+<p><strong>Important:</strong> The command line must begin with a <em>tab character</em>, not spaces.</p>
+<hr>
+<h2>Example makefile</h2>
+<p>The following makefile expresses the dependencies for the statistics project. The compiler shown here (<code>cl</code>) is an example; the same structure applies to other compilers such as <code>gcc</code>.</p>
+<pre class="line-numbers d2l-code"><code class="language-makefile">statistics: display.obj mathfuncs.obj stats.obj
+cl display.obj mathfuncs.obj stats.obj
+
+display.obj: display.c mathfuncs.h
+cl -c display.c
+
+mathfuncs.obj: mathfuncs.c mathfuncs.h
+cl -c mathfuncs.c
+
+stats.obj: stats.c mathfuncs.h
+cl -c stats.c</code></pre>
+<p>When <code>nmake</code> is run, it builds the first target by default. If a dependency is newer than its target, the rule is executed.</p>
+<hr>
+<h2>Incremental builds</h2>
+<p>One of the main advantages of makefiles is <strong>incremental compilation</strong>.</p>
+<p>If only <code>stats.c</code> changes:</p>
+<ul>
+<li>Only <code>stats.obj</code> is recompiled</li>
+<li>The executable is relinked</li>
+<li>Other object files are reused</li>
+</ul>
+<p>This can significantly reduce build times in larger projects.</p>
+<p>A specific target can also be built directly:</p>
+<pre class="line-numbers d2l-code"><code class="language-batch">nmake stats.obj</code></pre>
+<hr>
+<h2>Additional targets</h2>
+<p>Makefiles often include utility targets that are not part of the normal build. A common example is <code>clean</code>, which removes generated files.</p>
+<pre class="line-numbers d2l-code"><code class="language-makefile">clean:
+del *.obj *.exe</code></pre>
+<p>This target is only executed when explicitly requested:</p>
+<pre class="line-numbers d2l-code"><code class="language-batch">nmake clean</code></pre>
+<hr>
+<h2>Macros (variables) in makefiles</h2>
+<p>Makefiles support macros (variables) to avoid repetition and make changes easier.</p>
+<pre class="line-numbers d2l-code"><code class="language-makefile">CC=cl
+EX=obj
+
+statistics: display.$(EX) mathfuncs.$(EX) stats.$(EX)
+$(CC) -o statistics.exe display.$(EX) mathfuncs.$(EX) stats.$(EX)
+
+display.$(EX): display.c mathfuncs.h
+$(CC) -c display.c</code></pre>
+<p>By changing only the macro definitions, the same makefile structure can be reused with a different compiler or platform.</p>
+<hr>
+<h2>Key takeaways</h2>
+<ul>
+<li>Makefiles describe <strong>how</strong> a program is built and <strong>what depends on what</strong>.</li>
+<li>They automate compiling and linking across multiple source files.</li>
+<li>They enable incremental builds by tracking file timestamps.</li>
+<li>They make builds reproducible and tool‑independent.</li>
+<li>Understanding makefiles helps demystify what IDEs do automatically.</li>
+</ul>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>GNU Make manual: https://www.gnu.org/software/make/manual/make.html</p>
+<p>nmake reference (Microsoft): https://learn.microsoft.com/en-us/cpp/build/reference/nmake-reference</p>
+<p>Makefile tutorial (Colby College): https://www.cs.colby.edu/maxwell/courses/tutorials/maketutor/</p>
+</div></body></html>

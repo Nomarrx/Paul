@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+<title>Lesson — Bitwise OR (|)</title>
+</head><body><h1>Lesson — Bitwise OR (|)</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Use masks to set bits and combine flags.</p>
+<p><strong>Assessment alignment:</strong> Midterm 1 (Bit masks / OR).</p>
+</div>
+</div>
+<h2>Bitwise OR</h2>
+<p>OR sets the result bit to 1 if either operand bit is 1 (or both). Logical OR is <code>||</code> (don’t confuse).</p>
+<h3>Example</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">void showBits(int value, int bytes);
+
+void bitOR(void)
+{
+    unsigned char a = 0x48;      // 01001000
+    unsigned char b = 0xB8;      // 10111000
+    unsigned char result = (unsigned char)(a | b); // 11111000
+
+    printf("Bitwise OR of a and b is 0x%x\n", result);
+    showBits(a, sizeof(char));
+    showBits(b, sizeof(char));
+    showBits(result, sizeof(char));
+}</code></pre>
+<h3>Mask to force bits ON</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">void demoORMask(void)
+{
+    int x = 0x030B1A0F;
+    int mask = 0xFFFF0000;     // set top 16 bits
+
+    printf("Masked value:\t0x%x\n", x | mask);
+    showBits(x, sizeof(int));
+    showBits(x | mask, sizeof(int));
+}</code></pre>
+<h3>What to notice</h3>
+<ul>
+<li><strong>Set bits:</strong> 1’s in the mask force corresponding bits to 1.</li>
+<li>Signed display can appear negative if the top bit becomes 1; use unsigned for clarity.</li>
+</ul>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>Bitwise OR (wiki): https://en.wikipedia.org/wiki/Bitwise_operation#OR</p>
+<p>C operators overview: https://en.cppreference.com/w/c/language/operator_arithmetic#Bitwise_operators</p>
+</div></body></html>

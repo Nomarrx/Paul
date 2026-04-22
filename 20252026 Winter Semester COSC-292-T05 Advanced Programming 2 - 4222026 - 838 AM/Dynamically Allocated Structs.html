@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+ <title>Lesson — Structures in C: Access &amp; Dynamic Allocation</title>
+</head><body><h1>Lesson — Structures in C: Access &amp; Dynamic Allocation</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Access struct members via dot/arrow and manage heap‑allocated structs.</p>
+<p><strong>Assessment alignment:</strong> Final Exam (Struct access &amp; heap allocation).</p>
+</div>
+</div>
+<h2>Accessing members</h2>
+<h3>Dot operator (struct variable)</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">BirthDateTD bd1;
+
+bd1.day = 10;
+bd1.month = 1;
+bd1.year = 2000;</code></pre>
+<h3>Pointer to struct: dereference then dot</h3>
+<p>Because <code>.</code> has higher precedence than <code>*</code>, you need parentheses if you dereference manually:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">BirthDateTD* bdPtr = NULL;
+bdPtr = (BirthDateTD*)malloc(sizeof(BirthDateTD));
+
+(*bdPtr).day = 31;       // clumsy, but correct</code></pre>
+<h3>Arrow operator (preferred)</h3>
+<p>The <code>-&gt;</code> operator combines dereference + member access and is the idiomatic way to access through a pointer:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">bdPtr-&gt;day = 31;
+bdPtr-&gt;month = 12;
+bdPtr-&gt;year = 1980;</code></pre>
+<h2>Dynamic allocation of structs</h2>
+<p>Allocate a struct on the heap with <code>malloc</code> and free it with <code>free</code> when done. Always check for <code>NULL</code>.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">BirthDateTD* bdPtr = (BirthDateTD*)malloc(sizeof(BirthDateTD));
+if (bdPtr)
+{
+    bdPtr-&gt;day = 31;
+    bdPtr-&gt;month = 12;
+    bdPtr-&gt;year = 1980;
+    // use bdPtr ...
+}
+free(bdPtr);
+bdPtr = NULL;</code></pre>
+<h3>Initializer helpers (optional pattern)</h3>
+<p>It’s common to write small helpers to set up structs:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">BirthDateTD makeBirthDate(const char* name, char gender, int d, int m, int y)
+{
+    BirthDateTD bd = {0};
+    strncpy(bd.cName, name, NAME_SIZE - 1);
+    bd.cGender = gender;
+    bd.day = d; bd.month = m; bd.year = y;
+    return bd; // returns by value: copies bytes
+}</code></pre>
+<h2>Passing structs to functions</h2>
+<ul>
+<li><strong>By value</strong> — copies the whole struct (simple, but copies bytes).</li>
+<li><strong>By pointer</strong> — pass <code>BirthDateTD*</code> to allow modification without copying the struct.</li>
+</ul>
+<pre class="line-numbers d2l-code"><code class="language-c">void DisplayBirthDateByValue(BirthDateTD bd);
+void DisplayBirthDateByPtr(const BirthDateTD* bdPtr); // const: promise not to modify</code></pre>
+<h2>Arrays of structs</h2>
+<p>Structs are contiguous in memory. Arrays of structs are contiguous sequences of those records.</p>
+<pre class="line-numbers d2l-code"><code class="language-c">BirthDateTD people[3] = {
+    { "Mike",  'm', 31, 12, 1980 },
+    { "Ada",   'f', 10, 12, 1815 },
+    { "Chris", 'm',  1,  1, 1990 }
+};
+
+for (int i = 0; i &lt; 3; i++)
+{
+    printf("%s: %02d/%02d/%04d\n",
+           people[i].cName, people[i].day, people[i].month, people[i].year);
+}</code></pre>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>Struct member access operators (cppreference): https://en.cppreference.com/w/c/language/operator_member_access</p>
+<p>Memory allocation for objects in C: https://en.cppreference.com/w/c/memory/malloc</p>
+</div></body></html>

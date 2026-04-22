@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-Global-2015.css">
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/SP-bootstrap-grid.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/shared/sp-template/scripts/jquery.ui.touch-punch.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/shared/sp-template/styles/jquery-ui.min.css">
+<script src="/shared/sp-template/scripts/snippets/accordion.js"></script>	
+<script>$(document).ready(function(){$("h1:first").addClass("sr-only");});</script>
+
+<title>Lesson — Structures in C: Typedef &amp; Initialization</title>
+</head><body><h1>Lesson — Structures in C: Typedef &amp; Initialization</h1>
+<div class="row">
+<div class="col-sm-12">
+<p><strong>Learning Outcome(s):</strong> LO5 — Apply <code>typedef</code> with structs and initialize instances safely.</p>
+<p><strong>Assessment alignment:</strong> Final Exam (Structs with typedef &amp; init lists).</p>
+</div>
+</div>
+<h2>Motivation: avoiding repeated <code>struct</code></h2>
+<p>Writing <code>struct TypeName</code> everywhere is cumbersome. Use a <code>typedef</code> to define a convenient alias for the struct type, so you can omit the <code>struct</code> keyword at use sites.</p>
+<h3>Typedef of an unnamed struct</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">#define NAME_SIZE 64
+
+typedef struct
+{
+    char cName[NAME_SIZE];
+    char cGender;
+    int  day;
+    int  month;
+    int  year;
+} BirthDateTD;  // “TD” suffix to mark a typedef name</code></pre>
+<h3>Declaring &amp; initializing instances</h3>
+<pre class="line-numbers d2l-code"><code class="language-c">// Variable with initializer list (like arrays)
+BirthDateTD bd = { "Mike", 'm', 31, 12, 1980 };
+
+// As a function parameter
+void DisplayBirthDate(BirthDateTD bd);</code></pre>
+<h3>Designated initializers (C99+)</h3>
+<p>Order-independent initialization is clearer and less error-prone:</p>
+<pre class="line-numbers d2l-code"><code class="language-c">BirthDateTD bd2 = {
+    .cName = "Ada",
+    .cGender = 'f',
+    .day = 10,
+    .month = 12,
+    .year = 1815
+};</code></pre>
+<h2>Memory model note</h2>
+<p>A struct occupies a contiguous block of memory. Members may be padded for alignment. When you copy a struct variable (assignment or pass-by-value), all bytes are copied (shallow copy of the bytes).</p>
+<div class="msgHead accor_ref" style="clear: both;">
+<h2>Reference(s)</h2>
+</div>
+<div class="msgBody accor_ref_body">
+<p>typedef (cppreference): https://en.cppreference.com/w/c/language/typedef</p>
+<p>Designated initializers (C99): https://en.cppreference.com/w/c/language/struct_initialization</p>
+</div></body></html>
